@@ -1,0 +1,9 @@
+<%= form_with model: @user do |f| %>
+  <%= f.label :email, "Email" %>
+  <%= f.email_field :email, required: true, autocomplete: "username" %>
+
+  <%= f.label :password, "Password" %>
+  <%= f.password_field :password, required: true, autocomplete: "new-password" %>
+
+  <%= f.submit "Register" %>
+<% end %>
