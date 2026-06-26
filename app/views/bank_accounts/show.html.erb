@@ -41,9 +41,13 @@
   </div>
 <% end %>
 
-<p class="muted account-meta"><%= @bank_account.currency %> · <%= pluralize(@page.count, "transaction") %></p>
+<p class="account-meta"><span class="pill"><%= @bank_account.currency %></span></p>
 
 <% if @page.count.positive? %>
+  <h2 class="section-head">
+    Transactions
+    <span class="count"><%= pluralize(@page.count, "transaction") %></span>
+  </h2>
   <table class="pnl-transactions">
     <thead>
       <tr>

@@ -3,6 +3,24 @@
     display: block;
   }
 
+  /* Keep the account header and its inline edit form the same height so the
+     page does not shift when switching between them. */
+  turbo-frame .page-head {
+    min-block-size: 2.75rem;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+
+    .count {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+  }
+
   .page-title {
     margin: 0 0 var(--s-2);
 
