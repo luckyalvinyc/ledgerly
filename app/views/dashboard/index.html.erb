@@ -3,7 +3,9 @@
     <h1>Dashboard</h1>
     <p class="muted"><%= @period.label %></p>
   </div>
-  <%= link_to "Add a bank account", new_bank_account_path, class: "btn btn-primary" %>
+  <% if @bank_accounts.any? %>
+    <%= link_to "Add a bank account", new_bank_account_path, class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <% if @bank_accounts.any? %>

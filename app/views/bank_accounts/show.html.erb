@@ -7,14 +7,16 @@
     <p class="muted"><%= @bank_account.currency %> · <%= pluralize(@page.count, "transaction") %></p>
   </div>
 
-  <div class="actions">
-    <%= link_to "View profit and loss",
-      bank_account_profit_and_loss_path(@bank_account),
-      class: "btn btn-primary" %>
-    <%= link_to "Import transactions",
-      new_bank_account_import_path(@bank_account),
-      class: "btn" %>
-  </div>
+  <% if @page.count.positive? %>
+    <div class="actions">
+      <%= link_to "View profit and loss",
+        bank_account_profit_and_loss_path(@bank_account),
+        class: "btn btn-primary" %>
+      <%= link_to "Import transactions",
+        new_bank_account_import_path(@bank_account),
+        class: "btn" %>
+    </div>
+  <% end %>
 </div>
 
 <% if @page.count.positive? %>
