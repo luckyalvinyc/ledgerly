@@ -1,0 +1,3 @@
+lucky:
+  email: "lucky@test.ing"
+  password_digest: <%= Argon2::Password.create("SomePassw0rd@") %>
