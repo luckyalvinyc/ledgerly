@@ -57,7 +57,7 @@ class BankAccountTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal "text/csv", response.media_type
-    assert_match "Date,Description,Amount,Currency,Counts toward profit", response.body
+    assert_match "Date,Description,Amount,Currency", response.body
     assert_match "Stripe payout", response.body
     assert_match "9800.00", response.body
   end

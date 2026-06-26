@@ -16,12 +16,16 @@ class ProfitAndLossController < ApplicationController
 
     respond_to do |format|
       format.html { @page = paginate(transactions) }
-      format.csv do
-        counted = @bank_account.transactions.where(posted_on: @period.range, included: true)
-        send_data Csv::Export.call(counted, currency: @bank_account.currency),
-          filename: "#{@bank_account.name.parameterize}-profit-and-loss-#{@period.label.parameterize}.csv",
-          type: "text/csv"
-      end
+      format.csv { export_to_csv(transactions) }
     end
   end
+
+  private
+
+    def export_to_csv(transactions)
+      currency = @bank_account.currency
+      filename = "#{@bank_account.name.parameterize}-profit-and-loss-#{@period.label.parameterize}.csv"
+
+      csv_exporter(transactions, currency:, filename:, included: true)
+    end
 end

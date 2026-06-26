@@ -73,4 +73,13 @@ class ApplicationController < ActionController::Base
       @current_user = nil
       @current_session = nil
     end
+
+    def csv_exporter(transactions, currency:, filename:, included: nil)
+      transactions = transactions.where(included: included) if !included.nil?
+      csv_file = Csv::Export.call(transactions, currency: currency)
+
+      send_file csv_file, filename: filename, type: "text/csv"
+    ensure
+      csv_file.close!
+    end
 end

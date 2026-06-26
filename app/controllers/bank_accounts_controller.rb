@@ -24,11 +24,7 @@ class BankAccountsController < ApplicationController
 
     respond_to do |format|
       format.html { @page = paginate(transactions) }
-      format.csv do
-        send_data Csv::Export.call(@bank_account.transactions, currency: @bank_account.currency, include_status: true),
-          filename: "#{@bank_account.name.parameterize}-transactions.csv",
-          type: "text/csv"
-      end
+      format.csv { export_to_csv(transactions) }
     end
   end
 
@@ -61,5 +57,12 @@ class BankAccountsController < ApplicationController
 
     def bank_account_update_params
       params.expect(bank_account: [ :name ])
+    end
+
+    def export_to_csv(transactions)
+      currency = @bank_account.currency
+      filename = "#{@bank_account.name.parameterize}-transactions.csv"
+
+      csv_exporter(transactions, currency:, filename:)
     end
 end
