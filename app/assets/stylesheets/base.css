@@ -53,9 +53,18 @@
     }
 
     .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--s-2);
       font-weight: 700;
       font-size: 1.125rem;
       color: var(--ink);
+    }
+
+    .brand-mark {
+      inline-size: 1.4rem;
+      block-size: 1.4rem;
+      color: var(--accent);
     }
   }
 }

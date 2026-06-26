@@ -5,7 +5,13 @@
   <body>
     <header class="site-header">
       <div class="bar">
-        <%= link_to "Ledgerly", root_path, class: "brand" %>
+        <%= link_to root_path, class: "brand" do %>
+          <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 4v14h14"/>
+            <path d="M8.5 14l3.5-3.5 2.5 2.5 4.5-5"/>
+          </svg>
+          <span>Ledgerly</span>
+        <% end %>
         <div class="bar-actions">
           <button type="button" class="btn theme-toggle" data-controller="theme" data-action="theme#toggle" aria-label="Toggle theme">
             <span class="theme-icon" aria-hidden="true"></span>
