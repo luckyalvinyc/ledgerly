@@ -16,6 +16,10 @@ module Ledgerly
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # We attach CSV files only and never transform images, so skip variant processing.
+    # This avoids the image_processing gem requirement and its boot-time warning.
+    config.active_storage.variant_processor = :disabled
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
