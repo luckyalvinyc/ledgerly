@@ -53,10 +53,11 @@
     </tr>
   </thead>
   <tbody>
-    <%= render partial: "transaction",
+    <%= render partial: "shared/transaction",
       collection: @page.records,
       locals: {
         currency: @bank_account.currency,
+        editable: true,
         granularity: @granularity,
         anchor: @period.starts_on
       } %>
