@@ -1,4 +1,8 @@
 @layer components {
+  turbo-frame {
+    display: block;
+  }
+
   .page-title {
     margin: 0 0 var(--s-2);
 
@@ -66,23 +70,14 @@
     color: var(--negative);
   }
 
-  .account-heading {
-    display: flex;
-    align-items: center;
-    gap: var(--s-2);
-  }
-  .account-name {
-    display: flex;
-    align-items: center;
-    gap: var(--s-1);
-  }
   .inline-edit {
     display: flex;
     align-items: center;
-    gap: var(--s-2);
+    gap: var(--s-3);
+    flex: 1;
   }
   .inline-edit input[type="text"] {
-    width: auto;
+    flex: 1;
   }
   .subtle-link {
     font-size: 0.8125rem;
@@ -198,6 +193,10 @@
   }
 
   .flash {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
     padding: var(--s-3) var(--s-4);
     border-radius: var(--radius-sm);
     margin-bottom: var(--s-5);
@@ -211,6 +210,24 @@
     color: var(--positive);
     background: color-mix(in oklab, var(--positive) 12%, var(--surface));
     border: 1px solid color-mix(in oklab, var(--positive) 30%, var(--surface));
+  }
+  .flash-caution {
+    color: var(--caution);
+    background: color-mix(in oklab, var(--caution) 12%, var(--surface));
+    border: 1px solid color-mix(in oklab, var(--caution) 30%, var(--surface));
+  }
+  .flash-close {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .flash-close:hover {
+    filter: none;
+    opacity: 0.7;
   }
 
   .profit {

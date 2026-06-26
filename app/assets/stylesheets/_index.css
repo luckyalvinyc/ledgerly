@@ -13,6 +13,7 @@
   --accent-ink: #ffffff;
   --positive: #157f3c;
   --negative: #c0392b;
+  --caution: #9a6700;
 
   --pitch-bg: var(--accent);
   --pitch-ink: var(--accent-ink);
@@ -48,6 +49,7 @@
     --accent-ink: #06140f;
     --positive: #5fd08a;
     --negative: #ef7a70;
+    --caution: #e3b341;
 
     --pitch-bg: #15463a;
     --pitch-ink: #eaf3ef;
@@ -67,6 +69,7 @@
   --accent-ink: #06140f;
   --positive: #5fd08a;
   --negative: #ef7a70;
+  --caution: #e3b341;
 
   --pitch-bg: #15463a;
   --pitch-ink: #eaf3ef;
