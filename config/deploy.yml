@@ -7,10 +7,10 @@ image: luckyalvinyc/ledgerly
 # Deploy to these servers.
 servers:
   web:
-    - 64.177.115.139
+    - ldgrly.app
   # job:
   #   hosts:
-  #     - 64.177.115.139
+  #     - ldgrly.app
   #   cmd: bin/jobs
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
