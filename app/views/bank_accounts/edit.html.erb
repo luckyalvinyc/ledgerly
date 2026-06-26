@@ -1,8 +1,10 @@
 <%= turbo_frame_tag @bank_account do %>
-  <%= form_with model: @bank_account, class: "inline-edit" do |f| %>
-    <%= f.text_field :name, autofocus: true %>
-    <%= f.submit "Save", class: "btn-primary" %>
-    <%= link_to "Cancel", @bank_account, class: "subtle-link" %>
-  <% end %>
+  <div class="page-head">
+    <%= form_with model: @bank_account, class: "inline-edit" do |f| %>
+      <%= f.text_field :name, autofocus: true %>
+      <%= f.submit "Save", class: "btn-primary" %>
+      <%= link_to "Cancel", @bank_account, class: "subtle-link" %>
+    <% end %>
+  </div>
   <%= render "shared/field_errors", model: @bank_account, attribute: :name %>
 <% end %>
