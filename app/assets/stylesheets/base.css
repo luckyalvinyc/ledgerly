@@ -1,0 +1,61 @@
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    margin-top: var(--s-6);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 650;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .container {
+    max-width: 64rem;
+    margin-inline: auto;
+    padding: var(--s-6) var(--s-5) var(--s-7);
+  }
+
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 64rem;
+      margin-inline: auto;
+      padding: var(--s-4) var(--s-5);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.125rem;
+      color: var(--ink);
+    }
+  }
+}

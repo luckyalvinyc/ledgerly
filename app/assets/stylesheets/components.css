@@ -1,0 +1,313 @@
+@layer components {
+  .page-title {
+    margin: 0 0 var(--s-2);
+
+    & + p {
+      margin: 0 0 var(--s-5);
+      color: var(--muted);
+    }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--s-5);
+  }
+
+  .btn,
+  button,
+  input[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: var(--s-2) var(--s-4);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    line-height: 1.2;
+  }
+  .btn-primary,
+  input[type="submit"] {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+  .btn:hover,
+  button:hover {
+    filter: brightness(0.97);
+  }
+
+  .theme-toggle {
+    padding: var(--s-2);
+    aspect-ratio: 1;
+    font-size: 1rem;
+  }
+
+  .info-btn {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--muted);
+    vertical-align: middle;
+    anchor-name: --info-anchor;
+  }
+
+  .info-popover {
+    /* fallback: centered if anchor positioning is unavailable */
+    position: fixed;
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    max-width: 22rem;
+    padding: var(--s-4);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    text-align: left;
+
+    p {
+      margin: 0 0 var(--s-2);
+    }
+
+    p:last-child {
+      margin: 0;
+    }
+  }
+
+  @supports (anchor-name: --a) {
+    .info-popover {
+      position-anchor: --info-anchor;
+      bottom: anchor(top);
+      right: anchor(right);
+      top: auto;
+      left: auto;
+      transform: none;
+      margin-bottom: var(--s-2);
+      position-try-fallbacks: flip-block;
+    }
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--s-3);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  td.amount,
+  th.amount {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .field {
+    margin-bottom: var(--s-4);
+  }
+
+  .hint {
+    margin-top: var(--s-1);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: var(--s-1);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="file"],
+  select {
+    width: 100%;
+    padding: var(--s-2) var(--s-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+
+  .flash {
+    padding: var(--s-3) var(--s-4);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--s-5);
+  }
+  .flash-alert {
+    color: var(--negative);
+    background: color-mix(in oklab, var(--negative) 12%, var(--surface));
+    border: 1px solid color-mix(in oklab, var(--negative) 30%, var(--surface));
+  }
+  .flash-notice {
+    color: var(--positive);
+    background: color-mix(in oklab, var(--positive) 12%, var(--surface));
+    border: 1px solid color-mix(in oklab, var(--positive) 30%, var(--surface));
+  }
+
+  .profit {
+    font-size: 2.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--positive);
+
+    &.in-the-red {
+      color: var(--negative);
+    }
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-4);
+    margin-top: var(--s-4);
+
+    dt {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    dd {
+      text-align: right;
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 0.125rem var(--s-2);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-4);
+    font-size: 0.8125rem;
+    color: var(--muted);
+
+    a {
+      color: var(--muted);
+
+      &:hover {
+        color: var(--ink);
+      }
+    }
+
+    .sep {
+      color: var(--border);
+    }
+
+    [aria-current="page"] {
+      color: var(--ink);
+    }
+  }
+
+  .field-error {
+    margin-top: var(--s-1);
+    font-size: 0.8125rem;
+    color: var(--negative);
+  }
+
+   /* rails-specific class */
+  .field_with_errors {
+    display: contents;
+
+    input,
+    select {
+      border-color: var(--negative);
+    }
+  }
+
+  .pager {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-4);
+    padding: var(--s-3);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 12px rgba(20, 20, 20, 0.12);
+    font-size: 0.875rem;
+  }
+
+  .pager-info {
+    color: var(--muted);
+  }
+
+  .pager-link {
+    padding: var(--s-1) var(--s-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+
+    &:hover {
+      text-decoration: none;
+      border-color: var(--muted);
+    }
+  }
+
+  .pager-link.is-disabled {
+    color: var(--border);
+    pointer-events: none;
+  }
+
+  .bar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .theme-toggle-fixed {
+    position: fixed;
+    top: var(--s-4);
+    right: var(--s-4);
+    z-index: 30;
+  }
+
+  .theme-icon::before {
+    content: "\1F319"; /* moon */
+  }
+
+  :root[data-theme="dark"] .theme-icon::before {
+    content: "\2600"; /* sun */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-icon::before {
+      content: "\2600";
+    }
+  }
+}

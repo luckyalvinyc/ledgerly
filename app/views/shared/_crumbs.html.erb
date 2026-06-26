@@ -1,0 +1,15 @@
+<%# locals: (trail:) %>
+
+<nav class="crumbs">
+  <% last = trail.size - 1 %>
+  <% trail.each_with_index do |(label, url), i| %>
+    <% if i < last && url.present? %>
+      <%= link_to label, url %>
+    <% else %>
+      <span aria-current="page"><%= label %></span>
+    <% end %>
+    <% if i < last %>
+      <span class="sep">›</span>
+    <% end %>
+  <% end %>
+</nav>

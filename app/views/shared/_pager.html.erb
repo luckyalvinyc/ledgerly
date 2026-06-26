@@ -1,0 +1,22 @@
+<%# locals: page %>
+<% if page.total > 1 %>
+  <nav class="pager" aria-label="Pagination">
+    <% if page.first? %>
+      <span class="pager-link is-disabled">Previous</span>
+    <% else %>
+      <%= link_to "Previous",
+        "#{request.path}?#{request.query_parameters.merge(page: page.prev_page).to_query}",
+        class: "pager-link" %>
+    <% end %>
+
+    <span class="pager-info">Page <%= page.current %> of <%= page.total %></span>
+
+    <% if page.last? %>
+      <span class="pager-link is-disabled">Next</span>
+    <% else %>
+      <%= link_to "Next",
+        "#{request.path}?#{request.query_parameters.merge(page: page.next_page).to_query}",
+        class: "pager-link" %>
+    <% end %>
+  </nav>
+<% end %>

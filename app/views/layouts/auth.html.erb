@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"<%= raw(%( data-theme="#{current_theme}")) if current_theme %>>
+  <%= render "layouts/shared/head" %>
+
+  <body class="auth">
+    <button type="button" class="btn theme-toggle theme-toggle-fixed" data-controller="theme" data-action="theme#toggle" aria-label="Toggle theme">
+      <span class="theme-icon" aria-hidden="true"></span>
+    </button>
+    <section class="auth-pitch">
+      <div class="auth-pitch-inner">
+        <p class="brand">Ledgerly</p>
+        <h1>Your money, in plain language.</h1>
+        <p class="lede">Upload a bank statement, see your profit at a glance. No finance degree required.</p>
+      </div>
+    </section>
+    <section class="auth-form">
+      <div class="auth-form-inner">
+        <% flash.each do |type, message| %>
+          <%= tag.div class: [ "flash", "flash-#{type}" ] do %>
+            <%= message %>
+          <% end %>
+        <% end %>
+        <%= yield %>
+      </div>
+    </section>
+  </body>
+</html>

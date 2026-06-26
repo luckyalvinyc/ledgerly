@@ -1,0 +1,51 @@
+@layer pages {
+  .steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--s-5);
+    font-size: 0.8125rem;
+    color: var(--muted);
+
+    .is-current {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .is-done {
+      color: var(--accent);
+    }
+  }
+
+  .format-details {
+    margin: var(--s-5) 0;
+    color: var(--muted);
+    font-size: 0.875rem;
+
+    summary {
+      cursor: pointer;
+      color: var(--accent);
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--s-1) var(--s-4);
+      margin: var(--s-3) 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: var(--s-5);
+    }
+  }
+
+  div.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+}
