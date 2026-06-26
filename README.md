@@ -18,6 +18,7 @@ number: what you actually made.
 - [What the profit and loss measures](#what-the-profit-and-loss-measures)
 - [Data model](#data-model)
 - [Key decisions](#key-decisions)
+- [Limitations and trade-offs](#limitations-and-trade-offs)
 - [Run it locally](#run-it-locally)
 - [Tests](#tests)
 - [Deployment](#deployment)
@@ -112,8 +113,9 @@ Notes on the import:
 - Each row gets a fingerprint, with a unique index, so importing the same file twice adds
   nothing new.
 - A single bad row is skipped and counted, it does not fail the whole import.
-- Detection is honest about its limits. When a date could be day first or month first and
-  there is no way to tell, it says so instead of guessing.
+- Dates are read precisely when the format is clear. When a slash date is genuinely
+  ambiguous (every day is 12 or under), it falls back to month first, so the preview is there
+  to catch a wrong read before you confirm.
 
 ## What the profit and loss measures
 
@@ -168,6 +170,32 @@ uploaded files with it, so a mistake is cheap to undo.
   A new bank never needs a code change or a deploy, and a bad guess is caught on the review
   screen before any data is saved.
 - **Money is exact.** Integer cents everywhere, with `BigDecimal` for parsing, never floats.
+
+## Limitations and trade-offs
+
+What Ledgerly deliberately leaves out, and why. Each is a conscious cut to stay simple and
+correct, with a clear path forward.
+
+- **Cash basis, sign based, no categories.** The statement is money in, money out, profit,
+  from what actually moved through the bank. There is no revenue, cost of goods, or
+  operating split, and no chart of accounts. That is the right altitude for a non-accountant.
+  Named categories and an accrual view are the next layer.
+- **One currency per account, no exchange rates.** A profit and loss is always single
+  currency. Mixing currencies into one total needs rates and a date, real complexity for
+  little gain at this size. Add it when a customer genuinely needs it.
+- **One server, on SQLite.** Excellent for a single busy node, but it does not scale
+  horizontally, and a lost box loses data without an off site backup. The upgrade is
+  Postgres plus off server backups when traffic or durability demand it, not before.
+- **Detection is good, not perfect, and the review is read only.** It reads the common CSV
+  shapes. When a slash date is truly ambiguous it assumes month first, which can be wrong for
+  some regions, and odd or non English formats may not map cleanly. The review screen shows
+  the parsed rows before anything is saved, so a bad read is visible and you can back out, but
+  you cannot correct the mapping by hand yet. An editable, saved per bank profile is the
+  planned next step.
+- **Single user, no PDF, no audit log, no team roles.** CSV export covers getting your data
+  out. The rest is straightforward to add when it earns its place.
+
+The cuts above are scope, not corners. The money math is exact and the flow is real.
 
 ## Run it locally
 
