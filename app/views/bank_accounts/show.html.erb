@@ -26,7 +26,7 @@
       <%= button_to @bank_account,
         method: :delete,
         class: "icon-btn icon-danger",
-        data: { turbo_confirm: "Delete #{@bank_account.name} and its #{pluralize(@page.count, "transaction")}? This cannot be undone." },
+        form: { data: { turbo_frame: "_top", turbo_confirm: "Delete #{@bank_account.name} and its #{pluralize(@page.count, "transaction")}? This cannot be undone." } },
         aria: { label: "Delete account" } do %>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M3 6h18"/>
