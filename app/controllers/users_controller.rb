@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
+  before_action :redirect_if_authenticated, only: [ :new, :create ]
+
+  layout "auth"
+
   def new
     @user = User.new
   end
@@ -8,15 +12,16 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      # TODO
+      sign_in(@user)
+      redirect_to root_path
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
   private
 
     def user_params
-      params.expect(user: [:email, :password])
+      params.expect(user: [ :email, :password ])
     end
 end

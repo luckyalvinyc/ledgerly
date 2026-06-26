@@ -3,7 +3,7 @@
 require "test_helper"
 
 class UserSignUpTest < ActionDispatch::IntegrationTest
-  test "signing up with valid details creates a user" do
+  test "a new owner can sign up" do
     assert_difference -> { User.count }, 1 do
       post users_path, params: {
         user: {
@@ -12,9 +12,14 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
         }
       }
     end
+
+    follow_redirect!
+
+    get root_path
+    assert_response :success
   end
 
-  test "signing up normalizes the case for the email" do
+  test "email is stored in a consistent form" do
     post users_path, params: {
       user: {
         email: "luCky@ExamplE.com",
@@ -22,10 +27,11 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_equal "lucky@example.com", User.first.email
+    user = User.find_by(email: "lucky@example.com")
+    assert_not_nil user
   end
 
-  test "signing up with an invalid email" do
+  test "a malformed email is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -35,10 +41,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a blank email" do
+  test "a missing email is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -48,10 +54,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a blank password" do
+  test "a missing password is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -61,10 +67,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a password length is less than 8" do
+  test "a short password is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -74,10 +80,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a password does not contain an uppercase letter" do
+  test "a password without an uppercase letter is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -87,10 +93,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a password does not contain a lowercase letter" do
+  test "a password without a lowercase letter is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -100,10 +106,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a password does not contain a digit" do
+  test "a password without a number is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -113,10 +119,10 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 
-  test "signing up with a password does not contain a special character" do
+  test "a password without a symbol is rejected" do
     assert_no_difference -> { User.count } do
       post users_path, params: {
         user: {
@@ -126,6 +132,6 @@ class UserSignUpTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
   end
 end

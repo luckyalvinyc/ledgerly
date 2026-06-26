@@ -1,9 +1,18 @@
+<h1>Create your account</h1>
+<p class="muted">Start seeing your profit in plain language.</p>
+
 <%= form_with model: @user do |f| %>
-  <%= f.label :email, "Email" %>
-  <%= f.email_field :email, required: true, autocomplete: "username" %>
-
-  <%= f.label :password, "Password" %>
-  <%= f.password_field :password, required: true, autocomplete: "new-password" %>
-
-  <%= f.submit "Register" %>
+  <div class="field">
+    <%= f.label :email, "Email" %>
+    <%= f.email_field :email, required: true, autocomplete: "username" %>
+    <%= render "shared/field_errors", model: @user, attribute: :email %>
+  </div>
+  <div class="field">
+    <%= f.label :password, "Password" %>
+    <%= f.password_field :password, required: true, autocomplete: "new-password" %>
+    <%= render "shared/field_errors", model: @user, attribute: :password %>
+  </div>
+  <%= f.submit "Create account", class: "btn-primary" %>
 <% end %>
+
+<p class="muted">Already have an account? <%= link_to "Sign in", new_session_path %></p>

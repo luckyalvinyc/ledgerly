@@ -1,0 +1,16 @@
+<h1>Welcome back</h1>
+<p class="muted">Sign in to your Ledgerly account</p>
+
+<%= form_with url: session_path do |f| %>
+  <div class="field">
+    <%= f.label :email, "Email" %>
+    <%= f.email_field :email, value: params[:email], required: true, autocomplete: "username" %>
+  </div>
+  <div class="field">
+    <%= f.label :password, "Password" %>
+    <%= f.password_field :password, required: true, autocomplete: "current-password" %>
+  </div>
+  <%= f.submit "Sign in", class: "btn-primary" %>
+<% end %>
+
+<p class="muted">New here? <%= link_to "Create an account", new_users_path %></p>
