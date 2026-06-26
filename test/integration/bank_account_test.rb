@@ -17,7 +17,7 @@ class BankAccountTest < ActionDispatch::IntegrationTest
 
     get bank_account_path(bank_account)
     assert_response :success
-    assert_select ".pnl-transactions tbody tr", 1
+    assert_select ".transactions-table tbody tr", 1
   end
 
   test "the account page shows an empty state with no transactions" do

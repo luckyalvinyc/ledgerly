@@ -66,11 +66,29 @@ class ProfitAndLossTest < ActionDispatch::IntegrationTest
 
     get bank_account_profit_and_loss_path(@bank_account, period: "month", date: "2026-06-15")
     assert_response :success
-    assert_select ".pnl-transactions tbody tr", 25
+    assert_select ".transactions-table tbody tr", 25
     assert_select ".pager"
 
     get bank_account_profit_and_loss_path(@bank_account, period: "month", date: "2026-06-15", page: 2)
     assert_response :success
-    assert_select ".pnl-transactions tbody tr", 5
+    assert_select ".transactions-table tbody tr", 5
+  end
+
+  test "the export only includes rows that count toward profit" do
+    import_rows(@bank_account) do |csv|
+      csv << [ "Date", "Description", "Amount", "Currency", "Running Balance" ]
+      csv << [ "2026-06-01", "Counted income", "1000.00", "USD", "0" ]
+      csv << [ "2026-06-02", "Excluded transfer", "-500.00", "USD", "0" ]
+    end
+
+    @bank_account.transactions.find_by(description: "Excluded transfer").update!(included: false)
+
+    get bank_account_profit_and_loss_path(@bank_account, period: "month", date: "2026-06-15", format: :csv)
+
+    assert_response :success
+    assert_equal "text/csv", response.media_type
+    assert_includes response.body, "Counted income"
+    assert_not_includes response.body, "Excluded transfer"
+    assert_not_includes response.body, "Counts toward profit"
   end
 end
