@@ -28,13 +28,22 @@
       </button>
       <div id="account_menu" popover class="menu-items">
         <% if @page.count.positive? %>
-          <%= link_to "Export CSV", bank_account_path(@bank_account, format: :csv), data: { turbo: false } %>
+          <%= link_to "Export CSV",
+            bank_account_path(@bank_account, format: :csv),
+            data: { turbo: false } %>
         <% end %>
-        <%= link_to "Edit name", edit_bank_account_path(@bank_account), data: { turbo_frame: dom_id(@bank_account) } %>
+        <%= link_to "Edit name",
+          edit_bank_account_path(@bank_account),
+          data: { turbo_frame: dom_id(@bank_account) } %>
         <%= button_to "Delete account", @bank_account,
           method: :delete,
           class: "danger",
-          form: { data: { turbo_frame: "_top", turbo_confirm: "Delete #{@bank_account.name} and its #{pluralize(@page.count, "transaction")}? This cannot be undone." } } %>
+          form: {
+            data: {
+              turbo_frame: "_top",
+              turbo_confirm: "Delete #{@bank_account.name} and its #{pluralize(@page.count, "transaction")}? This cannot be undone."
+            }
+          } %>
       </div>
     </div>
   </div>
