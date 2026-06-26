@@ -1,0 +1,53 @@
+<%= render "shared/crumbs",
+  trail: [["Dashboard", root_path], [@bank_account.name, @bank_account]] %>
+
+<div class="page-head">
+  <div class="titles">
+    <h1><%= @bank_account.name %></h1>
+    <p class="muted"><%= @bank_account.currency %> · <%= pluralize(@page.count, "transaction") %></p>
+  </div>
+
+  <div class="actions">
+    <%= link_to "View profit and loss",
+      bank_account_profit_and_loss_path(@bank_account),
+      class: "btn btn-primary" %>
+    <%= link_to "Import transactions",
+      new_bank_account_import_path(@bank_account),
+      class: "btn" %>
+  </div>
+</div>
+
+<% if @page.count.positive? %>
+  <table class="pnl-transactions">
+    <thead>
+      <tr>
+        <th class="date">Date</th>
+        <th>Description</th>
+        <th class="amount">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @page.records.each do |transaction| %>
+        <tr>
+          <td class="date"><%= transaction.posted_on.strftime("%d %b %Y") %></td>
+          <td><%= transaction.description %></td>
+          <%= tag.td class: class_names("amount", "is-negative" => transaction.amount.negative?) do %>
+            <%= money(transaction.amount, currency: @bank_account.currency) %>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render "shared/pager", page: @page %>
+<% else %>
+  <div class="card empty">
+    <h2>No transactions yet</h2>
+    <p class="muted">Import a CSV statement from your bank to see your profit.</p>
+    <div class="actions">
+      <%= link_to "Import your first statement",
+        new_bank_account_import_path(@bank_account),
+        class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
