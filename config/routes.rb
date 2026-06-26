@@ -24,4 +24,6 @@ Rails.application.routes.draw do
   end
 
   resources :transactions, only: [ :update ]
+
+  root "dashboard#index"
 end
