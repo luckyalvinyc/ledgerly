@@ -11,5 +11,14 @@ Rails.application.routes.draw do
   resource :session, only: [ :create, :destroy ]
   get "sign_in", to: "sessions#new", as: :new_session
 
-  resources :bank_accounts, only: [ :new, :create, :show ]
+  resources :bank_accounts, only: [ :new, :create, :show ] do
+    resources :imports, only: [ :new, :create ]
+  end
+
+  resources :imports, only: [ :show ] do
+    member do
+      get :review
+      post :confirm
+    end
+  end
 end

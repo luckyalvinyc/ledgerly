@@ -27,6 +27,27 @@ module ActiveSupport
 
       user
     end
+
+    def import_rows(bank_account, &block)
+      file = create_csv_file(&block)
+
+      post bank_account_imports_path(bank_account), params: {
+        file: file
+      }
+
+      import = bank_account.imports.sole
+
+      perform_enqueued_jobs do
+        post confirm_import_path(import)
+      end
+    end
+
+    def create_csv_file(&block)
+      Tempfile.create do |f|
+        CSV.open(f, "w", &block)
+        Rack::Test::UploadedFile.new(f)
+      end
+    end
   end
 end
 

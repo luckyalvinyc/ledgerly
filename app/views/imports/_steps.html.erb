@@ -1,0 +1,9 @@
+<%# locals: (current:) %>
+
+<ol class="steps">
+  <% ["Upload file", "Review", "Done"].each_with_index do |label, i| %>
+    <% step = i + 1 %>
+    <%= tag.li "#{i + 1}. #{label}",
+      class: class_names("step", "is-current" => step == current, "is-done" => step < current) %>
+  <% end %>
+</ol>
