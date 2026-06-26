@@ -1,0 +1,18 @@
+<h1 class="page-title">Add a bank account</h1>
+<p>Give it a name and pick its currency. You'll import a statement next.</p>
+
+<%= form_with model: @bank_account do |f| %>
+  <div class="field">
+    <%= f.label :name, "Account name" %>
+    <%= f.text_field :name %>
+    <%= render "shared/field_errors", model: @bank_account, attribute: :name %>
+  </div>
+  <div class="field">
+    <%= f.label :currency %>
+    <%= f.select :currency, Money::SUPPORTED_CURRENCIES %>
+    <%= render "shared/field_errors", model: @bank_account, attribute: :currency %>
+  </div>
+
+  <%= f.submit "Create account", class: "btn-primary" %>
+<% end %>
+

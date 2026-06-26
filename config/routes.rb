@@ -10,4 +10,6 @@ Rails.application.routes.draw do
 
   resource :session, only: [ :create, :destroy ]
   get "sign_in", to: "sessions#new", as: :new_session
+
+  resources :bank_accounts, only: [ :new, :create, :show ]
 end
