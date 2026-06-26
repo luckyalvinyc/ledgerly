@@ -1,0 +1,24 @@
+<% currency = statement.currency %>
+<% negative = statement.net_profit.negative? %>
+
+<div class="receipt">
+  <%= tag.div class: class_names("headline", "is-loss" => negative) do %>
+    <span class="label"><%= negative ? "Loss" : "Profit" %></span>
+    <span class="amount"><%= money(statement.net_profit, currency: currency) %></span>
+  <% end %>
+
+  <dl class="lines">
+    <div class="line">
+      <dt>Money in</dt>
+      <dd><%= money(statement.revenue, currency: currency) %></dd>
+    </div>
+    <div class="line">
+      <dt>Money out</dt>
+      <dd><%= money(statement.expenses, currency: currency) %></dd>
+    </div>
+  </dl>
+
+  <% if statement.net_margin.present? %>
+    <p class="margin muted"><%= statement.net_margin %>% margin</p>
+  <% end %>
+</div>

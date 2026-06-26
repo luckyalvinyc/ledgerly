@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   resources :bank_accounts, only: [ :new, :create, :show ] do
     resources :imports, only: [ :new, :create ]
+    resource :profit_and_loss, only: [ :show ], controller: :profit_and_loss
   end
 
   resources :imports, only: [ :show ] do
@@ -21,4 +22,6 @@ Rails.application.routes.draw do
       post :confirm
     end
   end
+
+  resources :transactions, only: [ :update ]
 end
