@@ -37,6 +37,7 @@ class ImportsController < ApplicationController
       @mapping = Csv::Detect.call(io).with(currency: currency)
       mapper = Csv::Mapper.new(@mapping)
       @rows = Csv::Parser.new(mapper).each_row(io).lazy.filter_map(&:row).first(10)
+        .sort_by(&:posted_on).reverse
     end
   end
 
