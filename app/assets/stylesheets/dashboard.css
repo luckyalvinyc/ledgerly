@@ -17,6 +17,20 @@
     gap: var(--s-5);
   }
 
+  .account-blank {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--s-4);
+
+    .btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
   .account {
     display: flex;
     flex-direction: column;
