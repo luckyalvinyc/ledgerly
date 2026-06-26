@@ -18,8 +18,9 @@
     </header>
     <main class="container">
       <% flash.each do |type, message| %>
-        <%= tag.div class: [ "flash", "flash-#{type}" ] do %>
-          <%= message %>
+        <%= tag.div class: [ "flash", "flash-#{type}" ], data: { controller: "flash" } do %>
+          <span><%= message %></span>
+          <button type="button" class="flash-close" data-action="flash#dismiss" aria-label="Dismiss">&times;</button>
         <% end %>
       <% end %>
       <%= yield %>

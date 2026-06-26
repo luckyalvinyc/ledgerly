@@ -37,7 +37,7 @@ class BankAccountsController < ApplicationController
   def destroy
     name = @bank_account.name
     @bank_account.destroy
-    redirect_to root_path, notice: t("flash.bank_accounts.deleted", name: name)
+    redirect_to root_path, flash: { caution: t("flash.bank_accounts.deleted", name: name) }
   end
 
   private
