@@ -19,9 +19,17 @@
     }
 
     .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--s-2);
       font-weight: 700;
       letter-spacing: 0.02em;
       opacity: 0.9;
+
+      .brand-mark {
+        inline-size: 1.4rem;
+        block-size: 1.4rem;
+      }
     }
 
     .lede {

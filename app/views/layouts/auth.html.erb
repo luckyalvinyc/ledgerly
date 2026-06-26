@@ -8,7 +8,13 @@
     </button>
     <section class="auth-pitch">
       <div class="auth-pitch-inner">
-        <p class="brand">Ledgerly</p>
+        <p class="brand">
+          <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 4v14h14"/>
+            <path d="M8.5 14l3.5-3.5 2.5 2.5 4.5-5"/>
+          </svg>
+          <span>Ledgerly</span>
+        </p>
         <h1>Your money, in plain language.</h1>
         <p class="lede">Upload a bank statement, see your profit at a glance. No finance degree required.</p>
       </div>
@@ -16,8 +22,9 @@
     <section class="auth-form">
       <div class="auth-form-inner">
         <% flash.each do |type, message| %>
-          <%= tag.div class: [ "flash", "flash-#{type}" ] do %>
-            <%= message %>
+          <%= tag.div class: [ "flash", "flash-#{type}" ], data: { controller: "flash" } do %>
+            <span><%= message %></span>
+            <button type="button" class="flash-close" data-action="flash#dismiss" aria-label="Dismiss">&times;</button>
           <% end %>
         <% end %>
         <%= yield %>
