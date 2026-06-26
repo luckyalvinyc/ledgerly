@@ -15,6 +15,7 @@ number: what you actually made.
 - [Tech stack](#tech-stack)
 - [Architecture](#architecture)
 - [How a statement becomes a profit and loss](#how-a-statement-becomes-a-profit-and-loss)
+- [What the profit and loss measures](#what-the-profit-and-loss-measures)
 - [Data model](#data-model)
 - [Key decisions](#key-decisions)
 - [Run it locally](#run-it-locally)
@@ -113,6 +114,28 @@ Notes on the import:
 - A single bad row is skipped and counted, it does not fail the whole import.
 - Detection is honest about its limits. When a date could be day first or month first and
   there is no way to tell, it says so instead of guessing.
+
+## What the profit and loss measures
+
+Ledgerly's profit and loss is a real statement, but a deliberately simple one. It is **cash
+basis**: built from the money that actually moved through the bank account in the period, not
+from invoices or accruals, so it matches what an owner sees in their bank. And it is **sign
+based**: money in is the sum of positive amounts, money out is the sum of negative amounts,
+and profit is the net. All of it in integer cents, so the math is exact.
+
+It is not a full accountant-style statement (revenue, cost of goods sold, gross profit,
+operating expenses, net profit) and there is no chart of accounts. That is on purpose. The
+reader is a small business owner, not an accountant, so the page shows three plain rows,
+money in, money out, profit, and one big number.
+
+Two things would make a naive sign-based number wrong: transfers between your own accounts,
+and personal spending mixed into a business account. To a normal person these are the same
+thing, money that should not count. So there is one switch per row, "counts toward profit",
+on by default. Flip it off and the row drops out of profit. No categories, no jargon.
+
+The fuller picture (named categories with an expense breakdown, an accrual view, a gross
+versus operating split) is a natural next step, left out of the demo on purpose to stay
+simple. The statement and the underlying transactions can be exported to CSV.
 
 ## Data model
 
