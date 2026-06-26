@@ -5,9 +5,10 @@
 # never changes the result. The same files double as upload material for the
 # live demo.
 
-demo = User.find_or_create_by!(email: "demo@ledgerly.app") do |user|
-  user.password = "DemoPassw0rd!"
-end
+# Always (re)set the demo password so re-seeding rehashes it with the current Argon2 pepper.
+demo = User.find_or_initialize_by(email: "demo@ledgerly.app")
+demo.password = "DemoPassw0rd!"
+demo.save!
 
 statements = [
   { name: "UnionBank",         currency: "PHP", file: "unionbank_php.csv" },
