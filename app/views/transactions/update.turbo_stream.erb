@@ -1,0 +1,15 @@
+<%= turbo_stream.replace dom_id(@transaction) do %>
+  <%= render "profit_and_loss/transaction",
+    transaction: @transaction,
+    currency: @bank_account.currency,
+    granularity: @granularity,
+    anchor: @period.starts_on %>
+<% end %>
+
+<%= turbo_stream.update "pnl_summary" do %>
+  <%= render "profit_and_loss/summary", statement: @statement %>
+<% end %>
+
+<%= turbo_stream.update "pnl_summary_compact" do %>
+  <%= render "profit_and_loss/summary_compact", statement: @statement %>
+<% end %>

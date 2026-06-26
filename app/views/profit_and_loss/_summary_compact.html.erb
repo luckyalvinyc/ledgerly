@@ -1,0 +1,7 @@
+<div class="receipt-compact">
+  <span class="label"><%= statement.net_profit.negative? ? "Loss" : "Profit" %></span>
+  <%= tag.strong class: class_names("amount", "in-the-red" => statement.net_profit.negative?) do %>
+    <%= money(statement.net_profit, currency: statement.currency) %>
+  <% end %>
+  <span class="period"><%= statement.period.label %></span>
+</div>

@@ -1,0 +1,56 @@
+<div class="page-head">
+  <h1 class="pnl-title">
+    <%= @bank_account.name %> profit, <%= @statement.period.label %>
+  </h1>
+  <%= link_to "Import transactions",
+    new_bank_account_import_path(@bank_account, return_to: request.fullpath),
+    class: "btn btn-primary" %>
+</div>
+
+<div data-controller="sticky-summary">
+  <div id="pnl_summary" data-sticky-summary-target="full">
+    <%= render "summary", statement: @statement %>
+  </div>
+
+  <div id="pnl_summary_compact" class="compact-wrap" data-sticky-summary-target="compact" hidden>
+    <%= render "summary_compact", statement: @statement %>
+  </div>
+</div>
+
+<nav class="period-nav">
+  <% PeriodScoped::GRANULARITIES.each do |g| %>
+    <%= link_to g.capitalize,
+      bank_account_profit_and_loss_path(@bank_account, period: g),
+      class: class_names("seg", "is-active" => @granularity == g) %>
+  <% end %>
+</nav>
+
+<h2>Transactions</h2>
+<table class="pnl-transactions">
+  <thead>
+    <tr>
+      <th class="date">Date</th>
+      <th>Description</th>
+      <th class="amount">Amount</th>
+      <th class="actions">
+        Counts toward profit
+        <button type="button" class="info-btn" popovertarget="profit-help" aria-label="What counts toward profit?">?</button>
+        <div id="profit-help" popover class="info-popover">
+          <p>Every transaction counts toward your profit by default.</p>
+          <p>Switch one off when it is a transfer between your own accounts, or personal spending, so it does not count toward your business profit.</p>
+        </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render partial: "transaction",
+      collection: @page.records,
+      locals: {
+        currency: @bank_account.currency,
+        granularity: @granularity,
+        anchor: @period.starts_on
+      } %>
+  </tbody>
+</table>
+
+<%= render "shared/pager", page: @page %>
