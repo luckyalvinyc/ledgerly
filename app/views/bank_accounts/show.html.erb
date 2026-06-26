@@ -1,44 +1,47 @@
 <%= render "shared/crumbs",
   trail: [["Dashboard", root_path], [@bank_account.name, @bank_account]] %>
 
-<%= turbo_frame_tag @bank_account do %>
-  <div class="page-head">
-    <div class="titles">
+<div class="page-head">
+  <div class="titles">
+    <%= turbo_frame_tag @bank_account do %>
       <h1><%= @bank_account.name %></h1>
-      <p class="muted"><%= @bank_account.currency %> · <%= pluralize(@page.count, "transaction") %></p>
-    </div>
+    <% end %>
+    <p class="muted"><%= @bank_account.currency %> · <%= pluralize(@page.count, "transaction") %></p>
+  </div>
 
-    <div class="actions">
-      <% if @page.count.positive? %>
-        <%= link_to "View profit and loss",
-          bank_account_profit_and_loss_path(@bank_account),
-          class: "btn btn-primary" %>
-        <%= link_to "Import transactions",
-          new_bank_account_import_path(@bank_account),
-          class: "btn" %>
+  <div class="actions">
+    <% if @page.count.positive? %>
+      <%= link_to "View profit and loss",
+        bank_account_profit_and_loss_path(@bank_account),
+        class: "btn btn-primary" %>
+      <%= link_to "Import transactions",
+        new_bank_account_import_path(@bank_account),
+        class: "btn" %>
+    <% end %>
+    <div class="icon-actions">
+      <%= link_to edit_bank_account_path(@bank_account),
+        class: "icon-btn",
+        data: { turbo_frame: dom_id(@bank_account) },
+        aria: { label: "Edit account name" } do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        </svg>
       <% end %>
-      <div class="icon-actions">
-        <%= link_to edit_bank_account_path(@bank_account), class: "icon-btn", aria: { label: "Edit account name" } do %>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
-          </svg>
-        <% end %>
-        <%= button_to @bank_account,
-          method: :delete,
-          class: "icon-btn icon-danger",
-          form: { data: { turbo_frame: "_top", turbo_confirm: "Delete #{@bank_account.name} and its #{pluralize(@page.count, "transaction")}? This cannot be undone." } },
-          aria: { label: "Delete account" } do %>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M3 6h18"/>
-            <path d="M8 6V4h8v2"/>
-            <path d="M6 6l1 14h10l1-14"/>
-          </svg>
-        <% end %>
-      </div>
+      <%= button_to @bank_account,
+        method: :delete,
+        class: "icon-btn icon-danger",
+        data: { turbo_confirm: "Delete #{@bank_account.name} and its #{pluralize(@page.count, "transaction")}? This cannot be undone." },
+        aria: { label: "Delete account" } do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4h8v2"/>
+          <path d="M6 6l1 14h10l1-14"/>
+        </svg>
+      <% end %>
     </div>
   </div>
-<% end %>
+</div>
 
 <% if @page.count.positive? %>
   <table class="pnl-transactions">
