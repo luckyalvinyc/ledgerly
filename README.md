@@ -45,7 +45,7 @@ The flow is short:
 | Database | SQLite | 2.1+ |
 | Front end | Hotwire (Turbo + Stimulus), import maps, Propshaft | ships with Rails 8 |
 | Background jobs | Solid Queue | ships with Rails 8 |
-| Cache and cable | Solid Cache, Solid Cable | ships with Rails 8 |
+| Cache | Solid Cache (also rate limiting) | ships with Rails 8 |
 | Passwords | Argon2id (the `argon2` gem) | 2.3 |
 | File uploads | Active Storage on local disk | ships with Rails 8 |
 | Web server | Puma behind Thruster | ships with Rails 8 |
@@ -155,8 +155,8 @@ uploaded files with it, so a mistake is cheap to undo.
 ## Key decisions
 
 - **SQLite, not Postgres.** It is production grade in Rails 8 and keeps the deploy to one
-  server with no extra services. Solid Queue, Solid Cache, and Solid Cable all run on it,
-  so there is no Redis. Move to Postgres only when more than one server is needed.
+  server with no extra services. Solid Queue and Solid Cache run on it, so there is no
+  Redis. Move to Postgres only when more than one server is needed.
 - **Hand written auth with Argon2id, not a gem like Devise.** The login work is small and
   visible. Login is constant time so it does not leak which emails exist, and sessions live
   in the database so they can be revoked.
