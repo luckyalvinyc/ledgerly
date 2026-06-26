@@ -1,0 +1,5 @@
+<%# locals: (model:, attribute:) %>
+
+<% model.errors.full_messages_for(attribute).each do |message| %>
+  <p class="field-error"><%= message %></p>
+<% end %>

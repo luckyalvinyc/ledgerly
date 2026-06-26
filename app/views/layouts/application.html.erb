@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= content_for(:title) || "Ledgerly" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Ledgerly">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+<html lang="en"<%= raw(%( data-theme="#{current_theme}")) if current_theme %>>
+  <%= render "layouts/shared/head" %>
 
   <body>
-    <%= yield %>
+    <header class="site-header">
+      <div class="bar">
+        <%= link_to "Ledgerly", root_path, class: "brand" %>
+        <div class="bar-actions">
+          <button type="button" class="btn theme-toggle" data-controller="theme" data-action="theme#toggle" aria-label="Toggle theme">
+            <span class="theme-icon" aria-hidden="true"></span>
+          </button>
+          <% if current_user.present? %>
+            <%= button_to "Sign out", session_path, method: :delete, class: "btn" %>
+          <% end %>
+        </div>
+      </div>
+    </header>
+    <main class="container">
+      <% flash.each do |type, message| %>
+        <%= tag.div class: [ "flash", "flash-#{type}" ] do %>
+          <%= message %>
+        <% end %>
+      <% end %>
+      <%= yield %>
+    </main>
   </body>
 </html>
