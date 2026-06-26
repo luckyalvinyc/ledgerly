@@ -3,9 +3,7 @@
   <%= render "layouts/shared/head" %>
 
   <body class="auth">
-    <button type="button" class="btn theme-toggle theme-toggle-fixed" data-controller="theme" data-action="theme#toggle" aria-label="Toggle theme">
-      <span class="theme-icon" aria-hidden="true"></span>
-    </button>
+    <%= render "shared/theme_toggle" %>
     <section class="auth-pitch">
       <div class="auth-pitch-inner">
         <p class="brand">

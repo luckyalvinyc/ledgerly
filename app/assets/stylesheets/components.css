@@ -441,9 +441,31 @@
 
   .theme-toggle-fixed {
     position: fixed;
-    top: var(--s-4);
+    bottom: var(--s-7);
+    left: var(--s-4);
+    z-index: 30;
+  }
+
+  .scroll-top {
+    position: fixed;
+    bottom: var(--s-7);
     right: var(--s-4);
     z-index: 30;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding: 0;
+    border-radius: 50%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease;
+  }
+  .scroll-top svg {
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+  }
+  .scroll-top.is-visible {
+    opacity: 1;
+    visibility: visible;
   }
 
   .theme-icon::before {
