@@ -42,6 +42,52 @@
   button:hover {
     filter: brightness(0.97);
   }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-2);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    border-radius: var(--radius-sm);
+  }
+  .icon-btn:hover {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--border);
+    filter: none;
+  }
+  .icon-btn svg {
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+  }
+  .icon-danger:hover {
+    color: var(--negative);
+  }
+
+  .account-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .account-name {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+  }
+  .inline-edit {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .inline-edit input[type="text"] {
+    width: auto;
+  }
+  .subtle-link {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
 
   .theme-toggle {
     padding: var(--s-2);
