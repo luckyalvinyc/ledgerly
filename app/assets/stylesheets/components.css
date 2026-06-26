@@ -93,6 +93,63 @@
     gap: var(--s-1);
   }
 
+  .menu-btn {
+    anchor-name: --menu-anchor;
+  }
+
+  .menu-items {
+    /* fallback: centered if anchor positioning is unavailable */
+    position: fixed;
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    min-inline-size: 11rem;
+    padding: var(--s-1);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+
+    a,
+    button {
+      display: block;
+      inline-size: 100%;
+      text-align: left;
+      padding: var(--s-2) var(--s-3);
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      border-radius: var(--radius-sm);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    a:hover,
+    button:hover {
+      background: var(--surface-2);
+      filter: none;
+    }
+
+    .danger {
+      color: var(--negative);
+    }
+  }
+
+  @supports (anchor-name: --a) {
+    .menu-items {
+      position-anchor: --menu-anchor;
+      top: anchor(bottom);
+      right: anchor(right);
+      left: auto;
+      transform: none;
+      margin-top: var(--s-2);
+      position-try-fallbacks: flip-block;
+    }
+  }
+
   .account-meta {
     margin-top: calc(-1 * var(--s-3));
     margin-bottom: var(--s-5);

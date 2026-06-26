@@ -10,13 +10,20 @@
     <%= @bank_account.name %> profit, <%= @statement.period.label %>
   </h1>
   <div class="actions">
-    <%= link_to "Export CSV",
-      bank_account_profit_and_loss_path(@bank_account, period: @granularity, date: params[:date], format: :csv),
-      class: "btn",
-      data: { turbo: false } %>
     <%= link_to "Import transactions",
       new_bank_account_import_path(@bank_account, return_to: request.fullpath),
       class: "btn btn-primary" %>
+
+    <button type="button" class="icon-btn menu-btn" popovertarget="pnl_menu" aria-label="More actions">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <circle cx="12" cy="5" r="1.6"/>
+        <circle cx="12" cy="12" r="1.6"/>
+        <circle cx="12" cy="19" r="1.6"/>
+      </svg>
+    </button>
+    <div id="pnl_menu" popover class="menu-items">
+      <%= link_to "Export CSV", bank_account_profit_and_loss_path(@bank_account, period: @granularity, date: params[:date], format: :csv), data: { turbo: false } %>
+    </div>
   </div>
 </div>
 
