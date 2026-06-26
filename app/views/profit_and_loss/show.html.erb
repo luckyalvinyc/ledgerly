@@ -1,7 +1,14 @@
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
 <div class="page-head">
-  <h1 class="pnl-title">
-    <%= @bank_account.name %> profit, <%= @statement.period.label %>
-  </h1>
+  <div class="titles">
+    <%= link_to "Back to #{@bank_account.name}", @bank_account, class: "btn btn-back" %>
+    <h1 class="pnl-title">
+      <%= @bank_account.name %> profit, <%= @statement.period.label %>
+    </h1>
+  </div>
   <%= link_to "Import transactions",
     new_bank_account_import_path(@bank_account, return_to: request.fullpath),
     class: "btn btn-primary" %>
