@@ -20,7 +20,16 @@ class BankAccountsController < ApplicationController
   end
 
   def show
-    @page = paginate(@bank_account.transactions.order(posted_on: :desc))
+    transactions = @bank_account.transactions.order(posted_on: :desc)
+
+    respond_to do |format|
+      format.html { @page = paginate(transactions) }
+      format.csv do
+        send_data Csv::Export.call(transactions, currency: @bank_account.currency),
+          filename: "#{@bank_account.name.parameterize}-transactions.csv",
+          type: "text/csv"
+      end
+    end
   end
 
   def edit

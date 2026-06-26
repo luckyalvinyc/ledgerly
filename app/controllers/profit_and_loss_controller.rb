@@ -9,11 +9,18 @@ class ProfitAndLossController < ApplicationController
   def show
     load_statement(current_user.bank_accounts.find(params[:bank_account_id]))
 
-    @page = paginate(
-      @bank_account
-        .transactions
-        .where(posted_on: @period.range)
-        .order(posted_on: :desc)
-    )
+    transactions = @bank_account
+      .transactions
+      .where(posted_on: @period.range)
+      .order(posted_on: :desc)
+
+    respond_to do |format|
+      format.html { @page = paginate(transactions) }
+      format.csv do
+        send_data Csv::Export.call(transactions, currency: @bank_account.currency),
+          filename: "#{@bank_account.name.parameterize}-profit-and-loss-#{@period.label.parameterize}.csv",
+          type: "text/csv"
+      end
+    end
   end
 end

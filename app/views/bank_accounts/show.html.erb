@@ -17,6 +17,10 @@
           new_bank_account_import_path(@bank_account),
           class: "btn",
           data: { turbo_frame: "_top" } %>
+        <%= link_to "Export CSV",
+          bank_account_path(@bank_account, format: :csv),
+          class: "btn",
+          data: { turbo: false } %>
       <% end %>
       <div class="icon-actions">
         <%= link_to edit_bank_account_path(@bank_account), class: "icon-btn", aria: { label: "Edit account name" } do %>

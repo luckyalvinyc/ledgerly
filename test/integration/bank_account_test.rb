@@ -45,6 +45,23 @@ class BankAccountTest < ActionDispatch::IntegrationTest
     assert_equal "PHP", bank_account.reload.currency
   end
 
+  test "exporting the account transactions as csv" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "PHP")
+
+    import_rows(bank_account) do |csv|
+      csv << [ "Date", "Description", "Amount", "Currency", "Running Balance" ]
+      csv << [ "2026-06-01", "Stripe payout", "9800.00", "USD", "0" ]
+    end
+
+    get bank_account_path(bank_account, format: :csv)
+
+    assert_response :success
+    assert_equal "text/csv", response.media_type
+    assert_match "Date,Description,Amount,Currency,Counts toward profit", response.body
+    assert_match "Stripe payout", response.body
+    assert_match "9800.00", response.body
+  end
+
   test "deleting an account removes it and its transactions" do
     bank_account = @user.bank_accounts.create!(name: "Doomed", currency: "PHP")
 
