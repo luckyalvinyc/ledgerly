@@ -3,17 +3,6 @@
     margin: 0;
   }
 
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-3);
-
-    .count {
-      font-size: 0.875rem;
-      font-weight: 400;
-      color: var(--muted);
-    }
-  }
 
   .receipt {
     max-width: 28rem;
