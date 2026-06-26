@@ -25,7 +25,7 @@ class BankAccountsController < ApplicationController
     respond_to do |format|
       format.html { @page = paginate(transactions) }
       format.csv do
-        send_data Csv::Export.call(transactions, currency: @bank_account.currency, include_status: true),
+        send_data Csv::Export.call(@bank_account.transactions, currency: @bank_account.currency, include_status: true),
           filename: "#{@bank_account.name.parameterize}-transactions.csv",
           type: "text/csv"
       end

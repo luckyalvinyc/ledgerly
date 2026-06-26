@@ -13,7 +13,8 @@ module Csv
 
       ::CSV.generate do |csv|
         csv << headers
-        transactions.each do |transaction|
+        # Batched so a large export (a full year) never loads every row at once.
+        transactions.find_each(batch_size: 1000) do |transaction|
           row = [
             transaction.posted_on.iso8601,
             transaction.description,
