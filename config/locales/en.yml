@@ -33,3 +33,6 @@ en:
     sessions:
       invalid: "Invalid email or password"
       rate_limited: "Too many sign-in attempts. Please wait a few minutes and try again."
+    bank_accounts:
+      updated: "Account updated"
+      deleted: "%{name} and its transactions were deleted"
