@@ -53,15 +53,9 @@
       </tr>
     </thead>
     <tbody>
-      <% @page.records.each do |transaction| %>
-        <tr>
-          <td class="date"><%= transaction.posted_on.strftime("%d %b %Y") %></td>
-          <td><%= transaction.description %></td>
-          <%= tag.td class: class_names("amount", "is-negative" => transaction.amount.negative?) do %>
-            <%= money(transaction.amount, currency: @bank_account.currency) %>
-          <% end %>
-        </tr>
-      <% end %>
+      <%= render partial: "shared/transaction",
+        collection: @page.records,
+        locals: { currency: @bank_account.currency } %>
     </tbody>
   </table>
 

@@ -1,7 +1,8 @@
 <%= turbo_stream.replace dom_id(@transaction) do %>
-  <%= render "profit_and_loss/transaction",
+  <%= render "shared/transaction",
     transaction: @transaction,
     currency: @bank_account.currency,
+    editable: true,
     granularity: @granularity,
     anchor: @period.starts_on %>
 <% end %>
