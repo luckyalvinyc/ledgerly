@@ -1,0 +1,59 @@
+<% if @import.reviewing? || @import.pending? || @import.processing? %>
+  <% content_for :head do %>
+    <meta http-equiv="refresh" content="2">
+  <% end %>
+<% end %>
+
+<%= render "shared/crumbs",
+  trail: [["Dashboard", root_path], [@import.bank_account.name, @import.bank_account], ["Import", nil]] %>
+
+<%= render "steps", current: 3 %>
+
+<% case @import.status.to_sym %>
+<% when :reviewing, :pending, :processing %>
+  <h1 class="page-title">Importing your file…</h1>
+  <p class="muted">This usually takes a few seconds. The page will update on its own.</p>
+
+<% when :completed %>
+  <% if @import.imported_rows.positive? %>
+    <h1 class="page-title">Done. <%= pluralize(@import.imported_rows, "transaction") %> added.</h1>
+    <p class="muted">
+      Added to <%= @import.bank_account.name %>.
+      <% if @import.duplicate_rows.positive? %>
+        Skipped <%= pluralize(@import.duplicate_rows, "duplicate") %> already in your account.
+      <% end %>
+    </p>
+  <% else %>
+    <h1 class="page-title">Nothing new to add</h1>
+    <p class="muted">All <%= pluralize(@import.total_rows, "transaction") %> were already in <%= @import.bank_account.name %>.</p>
+  <% end %>
+
+  <div class="actions">
+    <%= link_to "View profit and loss",
+      bank_account_profit_and_loss_path(@import.bank_account),
+      class: "btn btn-primary" %>
+    <%= link_to "Back",
+      import_return_to(@import),
+      class: "btn" %>
+  </div>
+
+<% when :failed %>
+  <h1 class="page-title">We couldn't finish this import</h1>
+  <p class="muted">Please check the file is a CSV exported from your bank, then try again.</p>
+
+  <% if @import.error_message.present? %>
+    <details class="format-details">
+      <summary>Technical details</summary>
+      <p><%= @import.error_message %></p>
+    </details>
+  <% end %>
+
+  <div class="actions">
+    <%= link_to "Try again",
+      new_bank_account_import_path(@import.bank_account),
+      class: "btn btn-primary" %>
+    <%= link_to "Back",
+      import_return_to(@import),
+      class: "btn" %>
+  </div>
+<% end %>

@@ -1,0 +1,11 @@
+Date,Description,Amount,Currency,Running Balance
+2026-06-21,Stripe payout,9800.00,USD,50877.70
+2026-06-20,Monthly bank fee,-25.00,USD,41077.70
+2026-06-18,Customer invoice #1043 - Globex,6200.00,USD,41102.70
+2026-06-15,Google Workspace,-72.00,USD,34902.70
+2026-06-12,Payroll - June,-15000.00,USD,34974.70
+2026-06-10,Transfer to savings,-20000.00,USD,49974.70
+2026-06-08,Customer invoice #1042 - Acme Co,8500.00,USD,69974.70
+2026-06-05,Figma subscription,-45.00,USD,61474.70
+2026-06-03,AWS hosting,-480.30,USD,61519.70
+2026-06-01,Stripe payout,12000.00,USD,62000.00

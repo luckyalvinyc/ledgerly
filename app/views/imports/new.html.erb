@@ -1,0 +1,15 @@
+<%= render "shared/crumbs",
+  trail: [["Dashboard", root_path], [@bank_account.name, @bank_account], ["Import", nil]] %>
+
+<h1 class="page-title">Import to <%= @bank_account.name %></h1>
+<p class="muted">Upload a CSV statement from your bank. We'll read it and show you a preview, nothing is saved until you confirm.</p>
+
+<%= render "steps", current: 1 %>
+
+<%= form_with url: bank_account_imports_path(@bank_account) do |f| %>
+  <div class="field">
+    <%= f.file_field :file, required: true, accept: ".csv,text/csv" %>
+    <p class="hint">Accepted: a .csv file exported from your bank.</p>
+  </div>
+  <%= f.submit "Continue", class: "btn btn-primary" %>
+<% end %>

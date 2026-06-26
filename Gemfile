@@ -66,3 +66,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "csv"
+
+gem "ruby-lsp", "~> 0.26.9"
