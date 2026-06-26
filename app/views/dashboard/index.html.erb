@@ -1,0 +1,53 @@
+<div class="page-head">
+  <div class="titles">
+    <h1>Dashboard</h1>
+    <p class="muted"><%= @period.label %></p>
+  </div>
+  <%= link_to "Add a bank account", new_bank_account_path, class: "btn btn-primary" %>
+</div>
+
+<% if @bank_accounts.any? %>
+  <div class="account-grid">
+    <% @bank_accounts.each do |bank_account, statement| %>
+      <article class="card account">
+        <div class="top">
+          <%= tag.h2 title: bank_account.name do %>
+            <%= bank_account.name %>
+          <% end %>
+          <span class="pill"><%= bank_account.currency %></span>
+        </div>
+
+        <p class="period">
+          <%= statement.net_profit.negative? ? "Loss" : "Profit" %>
+        </p>
+        <%= tag.p class: class_names("profit", "in-the-red" => statement.net_profit.negative?) do %>
+          <%= money(statement.net_profit, currency: bank_account.currency) %>
+        <% end %>
+
+        <dl class="stats">
+          <dt>Money in</dt>
+          <dd><%= money(statement.revenue, currency: bank_account.currency) %></dd>
+          <dt>Money out</dt>
+          <dd><%= money(statement.expenses, currency: bank_account.currency) %></dd>
+        </dl>
+
+        <div class="actions">
+          <%= link_to "View profit and loss",
+            bank_account_profit_and_loss_path(bank_account),
+            class: "btn btn-primary" %>
+          <%= link_to "Import",
+            new_bank_account_import_path(bank_account),
+            class: "btn" %>
+        </div>
+      </article>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card empty">
+    <h2>Welcome to Ledgerly</h2>
+    <p class="muted">Add a bank account, then import a statement to see your profit at a glance.</p>
+    <div class="actions">
+      <%= link_to "Add a bank account", new_bank_account_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
