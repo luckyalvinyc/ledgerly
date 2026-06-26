@@ -39,25 +39,11 @@ class Money
     BigDecimal(cents) / 100
   end
 
-  def +(other)
-    self.class.new(cents + other.cents)
-  end
-
   def -(other)
     self.class.new(cents - other.cents)
   end
 
   def -@
     self.class.new(-cents)
-  end
-
-  def ==(other)
-    other.is_a?(Money) && cents == other.cents
-  end
-
-  alias_method :eql?, :==
-
-  def hash
-    cents.hash
   end
 end
