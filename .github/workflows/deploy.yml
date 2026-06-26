@@ -42,13 +42,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Trust the deploy host and load the SSH key
+      - name: Load the SSH key and trust the deploy host
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H 64.177.115.139 >> ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<'EOF'
+          Host 64.177.115.139
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
 
       - name: Deploy with Kamal
         run: bin/kamal deploy
