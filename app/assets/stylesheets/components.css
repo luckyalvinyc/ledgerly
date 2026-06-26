@@ -75,6 +75,11 @@
     gap: var(--s-1);
   }
 
+  .account-meta {
+    margin-top: calc(-1 * var(--s-3));
+    margin-bottom: var(--s-5);
+  }
+
   .inline-edit {
     display: flex;
     align-items: center;
