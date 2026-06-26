@@ -1,0 +1,54 @@
+name: Deploy
+
+# Auto-deploy to production, but only after the CI workflow passes on main.
+# CI (scan, lint, tests) is the gate, so a red build never ships.
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+# Never let two deploys run at once.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    permissions:
+      contents: read
+
+    env:
+      # A GitHub PAT with write:packages, the same token you use locally for kamal setup.
+      # Stored as a repo secret so CI and laptop push to GHCR the same way.
+      KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+      # Injected into the running container by Kamal (env/secret in deploy.yml).
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    steps:
+      - name: Checkout the exact commit that passed CI
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Trust the deploy host and load the SSH key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 64.177.115.139 >> ~/.ssh/known_hosts
+
+      - name: Deploy with Kamal
+        run: bin/kamal deploy
