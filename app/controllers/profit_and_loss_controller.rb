@@ -17,7 +17,7 @@ class ProfitAndLossController < ApplicationController
     respond_to do |format|
       format.html { @page = paginate(transactions) }
       format.csv do
-        send_data Csv::Export.call(transactions, currency: @bank_account.currency),
+        send_data Csv::Export.call(transactions.where(included: true), currency: @bank_account.currency),
           filename: "#{@bank_account.name.parameterize}-profit-and-loss-#{@period.label.parameterize}.csv",
           type: "text/csv"
       end

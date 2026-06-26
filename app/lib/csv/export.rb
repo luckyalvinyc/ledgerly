@@ -4,19 +4,24 @@ module Csv
   # Turns a set of transactions into a plain CSV string, machine readable:
   # ISO dates and decimal amounts, no currency symbols or thousands separators.
   module Export
-    HEADERS = [ "Date", "Description", "Amount", "Currency", "Counts toward profit" ].freeze
+    HEADERS = [ "Date", "Description", "Amount", "Currency" ].freeze
 
-    def self.call(transactions, currency:)
+    # include_status adds a "Counts toward profit" column. The full account ledger uses it;
+    # the profit and loss export omits it and only passes rows that already count.
+    def self.call(transactions, currency:, include_status: false)
+      headers = include_status ? HEADERS + [ "Counts toward profit" ] : HEADERS
+
       ::CSV.generate do |csv|
-        csv << HEADERS
+        csv << headers
         transactions.each do |transaction|
-          csv << [
+          row = [
             transaction.posted_on.iso8601,
             transaction.description,
             format("%.2f", transaction.amount.to_d),
-            currency,
-            transaction.included
+            currency
           ]
+          row << transaction.included if include_status
+          csv << row
         end
       end
     end
