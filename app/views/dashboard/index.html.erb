@@ -14,7 +14,7 @@
       <article class="card account">
         <div class="top">
           <%= tag.h2 title: bank_account.name do %>
-            <%= bank_account.name %>
+            <%= link_to bank_account.name, bank_account %>
           <% end %>
           <span class="pill"><%= bank_account.currency %></span>
         </div>
