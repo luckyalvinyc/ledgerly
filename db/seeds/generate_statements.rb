@@ -84,14 +84,23 @@ def generate(rng)
   txns.sort_by(&:date)
 end
 
-# --- format writers (each takes the sorted txns + an opening balance) ---
+# --- format writers (each takes the chronological txns + an opening balance) ---
+
+# The running balance is accumulated chronologically, then the rows are emitted newest first
+# to match how a real bank statement reads. The third value is the chronological index, used
+# for reference numbers that increase over time.
+def statement_rows(txns, opening)
+  balance = opening
+  txns.each_with_index.map do |t, i|
+    balance += t.cents
+    [ t, balance, i ]
+  end.reverse
+end
 
 def write_debit_credit_mmdd(file, txns, opening) # comma, MM/DD/YYYY, PHP
-  balance = opening
   CSV.open(File.join(OUT, file), "w") do |csv|
     csv << %w[Date Reference Description Debit Credit Balance]
-    txns.each_with_index do |t, i|
-      balance += t.cents
+    statement_rows(txns, opening).each do |t, balance, i|
       debit  = t.cents.negative? ? fmt(-t.cents) : nil
       credit = t.cents.positive? ? fmt(t.cents) : nil
       csv << [ t.date.strftime("%m/%d/%Y"), "TXN-#{1000 + i}", t.description, debit, credit, fmt(balance) ]
@@ -100,22 +109,18 @@ def write_debit_credit_mmdd(file, txns, opening) # comma, MM/DD/YYYY, PHP
 end
 
 def write_signed_iso(file, txns, opening) # comma, ISO, USD, Currency column
-  balance = opening
   CSV.open(File.join(OUT, file), "w") do |csv|
     csv << %w[Date Description Amount Currency Balance]
-    txns.each do |t|
-      balance += t.cents
+    statement_rows(txns, opening).each do |t, balance|
       csv << [ t.date.strftime("%Y-%m-%d"), t.description, fmt(t.cents), "USD", fmt(balance) ]
     end
   end
 end
 
 def write_money_in_out_ddmm(file, txns, opening) # semicolon, DD/MM/YYYY, GBP
-  balance = opening
   CSV.open(File.join(OUT, file), "w", col_sep: ";") do |csv|
     csv << [ "Date", "Details", "Money Out", "Money In", "Balance" ]
-    txns.each do |t|
-      balance += t.cents
+    statement_rows(txns, opening).each do |t, balance|
       out = t.cents.negative? ? fmt(-t.cents) : nil
       inn = t.cents.positive? ? fmt(t.cents) : nil
       csv << [ t.date.strftime("%d/%m/%Y"), t.description, out, inn, fmt(balance) ]
@@ -124,11 +129,9 @@ def write_money_in_out_ddmm(file, txns, opening) # semicolon, DD/MM/YYYY, GBP
 end
 
 def write_signed_ddmm_narration(file, txns, opening) # comma, DD/MM/YYYY, ZAR, Narration
-  balance = opening
   CSV.open(File.join(OUT, file), "w") do |csv|
     csv << [ "Transaction Date", "Narration", "Amount", "Balance" ]
-    txns.each do |t|
-      balance += t.cents
+    statement_rows(txns, opening).each do |t, balance|
       csv << [ t.date.strftime("%d/%m/%Y"), t.description, fmt(t.cents), fmt(balance) ]
     end
   end
