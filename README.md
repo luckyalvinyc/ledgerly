@@ -32,7 +32,7 @@ never mean wrong, so the money math is exact and the numbers can be trusted.
 The flow is short:
 
 1. Add a bank account and pick its currency.
-2. Import a CSV statement. Ledgerly reads the format for you and shows a preview.
+2. Import a CSV statement. Ledgerly reads the format for you and shows a preview you can adjust if anything looks off.
 3. See the profit and loss: money in, money out, and profit.
 4. Switch off any row that should not count, like a transfer between your own accounts or
    a personal expense. The profit updates right away.
@@ -95,12 +95,12 @@ drift. The core lives in `app/lib`. The shell lives in the usual Rails folders.
 Banks all export CSV in their own shape. Some use one signed amount column, some use
 separate debit and credit columns. Dates can be day first or month first. Separators can be
 commas or semicolons. Ledgerly handles this with a small pipeline: it guesses the format,
-lets you confirm it, then imports in the background.
+lets you adjust and confirm it, then imports in the background.
 
 ```mermaid
 flowchart LR
   Upload["Upload CSV"] --> Detect["Detect format and map columns"]
-  Detect --> Review["Review: friendly preview of the rows"]
+  Detect --> Review["Review: editable preview, fix any column"]
   Review --> Confirm["Confirm"]
   Confirm --> Job["Background job streams and saves"]
   Job --> Rows[("Transactions")]
@@ -109,13 +109,20 @@ flowchart LR
 
 Notes on the import:
 
+- The review is editable. Every detected field (date format, separator, amount style, and
+  each column) can be changed, and the preview re-reads as you go. It reads each row cell by
+  cell, so a row still shows the columns it could read and flags any cell it could not, which
+  points you at the field to fix. Those controls stay tucked away unless detection struggled.
+- Dates are read precisely when the format is clear. When a slash date is genuinely
+  ambiguous (every day is 12 or under), it falls back to month first, and the flagged preview
+  lets you switch the format if the guess was wrong.
+- Once confirmed, the mapping is remembered on the bank account, so the next statement in the
+  same format imports in one click. If the bank changes its layout, Ledgerly notices the
+  columns no longer fit and detects afresh.
 - Large files are streamed and saved in batches, so a big statement does not block the app.
 - Each row gets a fingerprint, with a unique index, so importing the same file twice adds
   nothing new.
 - A single bad row is skipped and counted, it does not fail the whole import.
-- Dates are read precisely when the format is clear. When a slash date is genuinely
-  ambiguous (every day is 12 or under), it falls back to month first, so the preview is there
-  to catch a wrong read before you confirm.
 
 ## What the profit and loss measures
 
@@ -151,8 +158,9 @@ erDiagram
 ```
 
 Each bank account has one currency, so a profit and loss is always in a single currency
-with no exchange rates. Deleting an account removes its imports, its transactions, and the
-uploaded files with it, so a mistake is cheap to undo.
+with no exchange rates. A bank account also remembers the column mapping from its last
+import, so repeat statements need no setup. Deleting an account removes its imports, its
+transactions, and the uploaded files with it, so a mistake is cheap to undo.
 
 ## Key decisions
 
@@ -166,9 +174,10 @@ uploaded files with it, so a mistake is cheap to undo.
   transfers between your own accounts, and personal spending in a business account. To a
   normal person these are the same thing, money that should not count. So there is one plain
   switch per row, "counts toward profit", on by default. No jargon.
-- **Mapping is data, not code.** Bank formats are detected and confirmed, not hard coded.
-  A new bank never needs a code change or a deploy, and a bad guess is caught on the review
-  screen before any data is saved.
+- **Mapping is data, not code.** Bank formats are detected, shown on an editable review, and
+  remembered per bank, never hard coded. A new bank never needs a code change or a deploy, a
+  bad guess is fixed on the review screen before any data is saved, and the next statement in
+  the same format imports in one click.
 - **Money is exact.** Integer cents everywhere, with `BigDecimal` for parsing, never floats.
 
 ## Limitations and trade-offs
@@ -186,12 +195,14 @@ correct, with a clear path forward.
 - **One server, on SQLite.** Excellent for a single busy node, but it does not scale
   horizontally, and a lost box loses data without an off site backup. The upgrade is
   Postgres plus off server backups when traffic or durability demand it, not before.
-- **Detection is good, not perfect, and the review is read only.** It reads the common CSV
-  shapes. When a slash date is truly ambiguous it assumes month first, which can be wrong for
-  some regions, and odd or non English formats may not map cleanly. The review screen shows
-  the parsed rows before anything is saved, so a bad read is visible and you can back out, but
-  you cannot correct the mapping by hand yet. An editable, saved per bank profile is the
-  planned next step.
+- **Detection is good, not perfect, but you are never stuck.** It reads the common CSV shapes,
+  and when a slash date is truly ambiguous it assumes month first. Anything it gets wrong you
+  fix on the editable review, which flags the exact cells it could not read, and the corrected
+  mapping is remembered for next time. Two honest edges remain: a bank account remembers one
+  format, so a bank that alternates between two layouts is re-detected on each switch rather
+  than kept in a library; and a file only imports if it maps to our columns (a date, a
+  description, an amount), so a fundamentally different shape needs a model change, not just a
+  mapping.
 - **Single user, no PDF, no audit log, no team roles.** CSV export covers getting your data
   out. The rest is straightforward to add when it earns its place.
 
