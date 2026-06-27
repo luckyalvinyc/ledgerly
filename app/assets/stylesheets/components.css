@@ -176,15 +176,24 @@
     font-size: var(--text-base);
   }
 
-  .info-btn {
+  .info-btn,
+  .info-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     inline-size: 1.25rem;
     block-size: 1.25rem;
     padding: 0;
+    border: 1px solid var(--border);
     border-radius: 50%;
+    background: var(--surface);
+    color: var(--muted);
     font-size: var(--text-xs);
     line-height: 1;
-    color: var(--muted);
     vertical-align: middle;
+  }
+
+  .info-btn {
     anchor-name: --info-anchor;
   }
 
