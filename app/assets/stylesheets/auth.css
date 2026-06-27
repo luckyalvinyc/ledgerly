@@ -13,7 +13,7 @@
     padding: var(--s-7);
 
     h1 {
-      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-size: var(--text-hero);
       line-height: 1.1;
       margin-top: var(--s-3);
     }
@@ -22,7 +22,7 @@
       display: inline-flex;
       align-items: center;
       gap: var(--s-2);
-      font-weight: 700;
+      font-weight: var(--font-bold);
       letter-spacing: 0.02em;
       opacity: 0.9;
 
@@ -33,7 +33,7 @@
     }
 
     .lede {
-      font-size: 1.125rem;
+      font-size: var(--text-lg);
       opacity: 0.92;
       margin-top: var(--s-4);
     }
@@ -54,7 +54,7 @@
     max-width: 24rem;
 
     h1 {
-      font-size: 1.5rem;
+      font-size: var(--text-2xl);
       margin-bottom: var(--s-2);
     }
 

@@ -8,8 +8,8 @@
     > summary {
       cursor: pointer;
       padding: var(--s-3) var(--s-4);
-      font-weight: 600;
-      font-size: 0.9375rem;
+      font-weight: var(--font-medium);
+      font-size: var(--text-md);
     }
 
     &[open] > summary {
@@ -18,7 +18,7 @@
 
     .panel-intro {
       padding: var(--s-4) var(--s-4) 0;
-      font-size: 0.875rem;
+      font-size: var(--text-md);
     }
 
     .flash {
@@ -59,12 +59,12 @@
     list-style: none;
     padding: 0;
     margin: 0 0 var(--s-5);
-    font-size: 0.8125rem;
+    font-size: var(--text-sm);
     color: var(--muted);
 
     .is-current {
       color: var(--ink);
-      font-weight: 600;
+      font-weight: var(--font-medium);
     }
 
     .is-done {
@@ -75,7 +75,7 @@
   .format-details {
     margin: var(--s-5) 0;
     color: var(--muted);
-    font-size: 0.875rem;
+    font-size: var(--text-md);
 
     summary {
       cursor: pointer;
