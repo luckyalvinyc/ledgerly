@@ -30,9 +30,7 @@ statements.each do |statement|
   import.file.attach(io: File.open(path), filename: statement[:file], content_type: "text/csv")
   import.save!
 
-  mapping = import.file.open { |io| Csv::Detect.call(io) }.with(currency: account.currency)
-  import.update!(mapping: mapping)
-  account.update!(mapping: mapping)
+  account.update!(mapping: import.file.open { |io| Csv::Detect.call(io) }.with(currency: account.currency))
 
   ImportJob.perform_now(import)
 end

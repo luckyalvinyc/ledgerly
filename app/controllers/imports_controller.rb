@@ -51,7 +51,6 @@ class ImportsController < ApplicationController
       return
     end
 
-    @import.update!(mapping: @mapping)
     @import.bank_account.update!(mapping: @mapping)
 
     claimed = current_user.imports
@@ -69,7 +68,7 @@ class ImportsController < ApplicationController
     end
 
     def current_mapping
-      @import.mapping || @import.bank_account.mapping || detected_mapping
+      @import.bank_account.mapping || detected_mapping
     end
 
     def detected_mapping
