@@ -1,18 +1,62 @@
 @layer pages {
+  .mapping-adjust {
+    margin-bottom: var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-2);
+
+    > summary {
+      cursor: pointer;
+      padding: var(--s-3) var(--s-4);
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+
+    &[open] > summary {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-intro {
+      padding: var(--s-4) var(--s-4) 0;
+      font-size: 0.875rem;
+    }
+
+    .flash {
+      margin: var(--s-4) var(--s-4) 0;
+    }
+  }
+
   .mapping-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     gap: var(--s-4);
-    margin-bottom: var(--s-5);
     padding: var(--s-4);
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
   }
 
-  .transactions-table .unreadable td {
-    color: var(--muted);
-    font-style: italic;
+  .field-label {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    margin-bottom: var(--s-1);
+
+    label {
+      margin-bottom: 0;
+    }
+  }
+
+  .preview-empty {
+    padding: var(--s-7) var(--s-5);
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+
+    p {
+      margin: 0 0 var(--s-2);
+    }
+
+    p:last-child {
+      margin: 0;
+    }
   }
 
   .steps {

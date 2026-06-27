@@ -2,58 +2,71 @@
   trail: [["Dashboard", root_path], [@import.bank_account.name, @import.bank_account], ["Import", nil]] %>
 
 <h1 class="page-title">Does this look right?</h1>
-<p class="muted">Here's what we read from <strong><%= @import.filename %></strong>. Adjust anything that looks off, the preview updates as you go. Nothing is saved until you import.</p>
+<p class="muted">Here's what we read from <strong><%= @import.filename %></strong>. If the transactions below look right, import them. Nothing is saved until you do.</p>
 
 <%= render "steps", current: 2 %>
 
 <%= turbo_frame_tag "import_review" do %>
+  <% ok = @results.select(&:ok?) %>
+  <% failed = @results.reject(&:ok?) %>
+
   <% if @error.present? %>
     <div class="flash flash-alert"><span><%= @error %></span></div>
   <% end %>
 
   <%= form_with url: preview_import_path(@import), data: { controller: "auto-submit" } do %>
-    <div class="mapping-grid">
-      <div class="field">
-        <%= label_tag "mapping_date_format", "Date format" %>
-        <%= select_tag "mapping[date_format]",
-          options_for_select(ImportsHelper::DATE_FORMATS, @mapping.date_format),
-          data: { action: "change->auto-submit#submit" } %>
-      </div>
-      <div class="field">
-        <%= label_tag "mapping_delimiter", "Column separator" %>
-        <%= select_tag "mapping[delimiter]",
-          options_for_select(ImportsHelper::DELIMITERS, @mapping.delimiter),
-          data: { action: "change->auto-submit#submit" } %>
-      </div>
-      <div class="field">
-        <%= label_tag "mapping_amount_strategy", "Amount style" %>
-        <%= select_tag "mapping[amount_strategy]",
-          options_for_select(ImportsHelper::AMOUNT_STRATEGIES, @mapping.amount_strategy.to_s),
-          data: { action: "change->auto-submit#submit" } %>
-      </div>
+    <details class="mapping-adjust"<%= " open" if @adjust_open %>>
+      <summary>Adjust how Ledgerly reads your file</summary>
 
-      <% column_fields(@mapping.amount_strategy).each do |field, label| %>
+      <p class="muted panel-intro">Tell Ledgerly which column in your file is which. We filled these in by reading your file, so change only what looks wrong. Not sure what a field means? Click the ? beside it.</p>
+
+      <% if failed.any? %>
+        <div class="flash flash-alert"><span>We couldn't read some rows. Double-check the <strong>Date</strong> and <strong>Amount</strong> settings above.</span></div>
+      <% end %>
+
+      <div class="mapping-grid">
         <div class="field">
-          <%= label_tag "mapping_column_map_#{field}", label %>
-          <%= select_tag "mapping[column_map][#{field}]",
-            options_for_select([ [ "Not used", "" ] ] + @headers.map { |h| [ h, h ] }, @mapping.column_map[field]),
+          <%= mapping_label "mapping_date_format", "Date format", :date_format %>
+          <%= select_tag "mapping[date_format]",
+            options_for_select(ImportsHelper::DATE_FORMATS, @mapping.date_format),
             data: { action: "change->auto-submit#submit" } %>
         </div>
-      <% end %>
-    </div>
+        <div class="field">
+          <%= mapping_label "mapping_delimiter", "Column separator", :delimiter %>
+          <%= select_tag "mapping[delimiter]",
+            options_for_select(ImportsHelper::DELIMITERS, @mapping.delimiter),
+            data: { action: "change->auto-submit#submit" } %>
+        </div>
+        <div class="field">
+          <%= mapping_label "mapping_amount_strategy", "Amount style", :amount_strategy %>
+          <%= select_tag "mapping[amount_strategy]",
+            options_for_select(ImportsHelper::AMOUNT_STRATEGIES, @mapping.amount_strategy.to_s),
+            data: { action: "change->auto-submit#submit" } %>
+        </div>
 
-    <table class="transactions-table">
-      <thead>
-        <tr>
-          <th class="date">Date</th>
-          <th>Description</th>
-          <th class="amount">Amount</th>
-          <th class="amount">Balance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @results.each do |result| %>
-          <% if result.ok? %>
+        <% column_fields(@mapping.amount_strategy).each do |field, label| %>
+          <div class="field">
+            <%= mapping_label "mapping_column_map_#{field}", label, field %>
+            <%= select_tag "mapping[column_map][#{field}]",
+              options_for_select([ [ "Not used", "" ] ] + @headers.map { |h| [ h, h ] }, @mapping.column_map[field]),
+              data: { action: "change->auto-submit#submit" } %>
+          </div>
+        <% end %>
+      </div>
+    </details>
+
+    <% if ok.any? %>
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th class="date">Date</th>
+            <th>Description</th>
+            <th class="amount">Amount</th>
+            <th class="amount">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% ok.each do |result| %>
             <% row = result.row %>
             <tr>
               <td class="date"><%= row.posted_on.strftime("%d %b %Y") %></td>
@@ -63,15 +76,19 @@
               <% end %>
               <td class="amount"><%= money(row.balance, currency: @import.bank_account.currency) if row.balance %></td>
             </tr>
-          <% else %>
-            <tr class="unreadable">
-              <td colspan="4">Could not read this row with the current settings.</td>
-            </tr>
           <% end %>
-        <% end %>
-      </tbody>
-    </table>
-    <p class="muted">Showing the first <%= @results.size %> rows.</p>
+        </tbody>
+      </table>
+      <p class="muted">
+        Showing the first <%= ok.size %> rows.
+        <% if failed.any? %><%= pluralize(failed.size, "row") %> couldn't be read and will be skipped.<% end %>
+      </p>
+    <% else %>
+      <div class="preview-empty">
+        <p>We couldn't read any transactions with the current settings.</p>
+        <p class="muted">Open <strong>Adjust how Ledgerly reads your file</strong> above and double-check the <strong>Date</strong> and <strong>Amount</strong> settings.</p>
+      </div>
+    <% end %>
 
     <div class="actions">
       <%= submit_tag "Yes, import these transactions",

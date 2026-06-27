@@ -32,12 +32,14 @@ class ImportsController < ApplicationController
   def review
     @mapping = current_mapping
     load_preview
+    @adjust_open = @results.any? { |result| !result.ok? }
   end
 
   # Re-renders the review frame for the mapping currently in the form (live preview).
   def preview
     @mapping = mapping_from(params)
     load_preview
+    @adjust_open = true
     render :review
   end
 
@@ -47,6 +49,7 @@ class ImportsController < ApplicationController
     if !@mapping.complete?
       @error = "Map a date, a description, and an amount before importing."
       load_preview
+      @adjust_open = true
       render :review, status: :unprocessable_content
       return
     end
@@ -67,8 +70,16 @@ class ImportsController < ApplicationController
       @import = current_user.imports.find(params[:id])
     end
 
+    # Start from what the bank used last time, but only if it still fits this file. If the bank
+    # changed its format, those columns won't be there, so fall back to a fresh detection.
     def current_mapping
-      @import.bank_account.mapping || detected_mapping
+      remembered = @import.bank_account.mapping
+      remembered && remembered_fits?(remembered) ? remembered : detected_mapping
+    end
+
+    def remembered_fits?(mapping)
+      headers = headers_for(mapping.delimiter)
+      mapping.column_map.values.all? { |header| headers.include?(header) }
     end
 
     def detected_mapping
@@ -80,9 +91,13 @@ class ImportsController < ApplicationController
     # Headers come from the chosen delimiter, so the column selects follow it. The sample keeps
     # failures (Csv::Parser::Result) so a wrong mapping is visible in the preview.
     def load_preview
-      @headers = @import.file.open { |io| CSV.parse_line(io.readline, col_sep: @mapping.delimiter) }
+      @headers = headers_for(@mapping.delimiter)
       mapper = Csv::Mapper.new(@mapping)
       @results = @import.file.open { |io| Csv::Parser.foreach(io, mapper:).first(SAMPLE_SIZE) }
+    end
+
+    def headers_for(delimiter)
+      @import.file.open { |io| CSV.parse_line(io.readline, col_sep: delimiter) }
     end
 
     COLUMN_FIELDS = %i[date description amount debit credit balance reference].freeze

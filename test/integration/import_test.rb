@@ -198,7 +198,7 @@ class ImportTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :success
-    assert_includes response.body, "Could not read this row"
+    assert_includes response.body, "read any transactions"
   end
 
   test "confirming with an edited mapping imports using that mapping" do
@@ -282,5 +282,29 @@ class ImportTest < ActionDispatch::IntegrationTest
     get review_import_path(second)
     assert_response :success
     assert_select "select[name=?] option[selected][value=?]", "mapping[date_format]", "%d/%m/%Y"
+  end
+
+  test "falls back to detection when the bank changes its format" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "2026-01-01", "Sale", "100.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    confirm_import(bank_account.imports.sole)
+
+    file = create_csv_file do |csv|
+      csv << [ "Posting Date", "Narration", "Money In", "Money Out" ]
+      csv << [ "2026-02-01", "Refund", "50.00", nil ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    second = bank_account.imports.where(status: :reviewing).sole
+
+    get review_import_path(second)
+
+    assert_response :success
+    assert_includes response.body, "Refund"
+    assert_not_includes response.body, "read any transactions"
   end
 end
