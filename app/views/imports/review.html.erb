@@ -7,9 +7,9 @@
 <%= render "steps", current: 2 %>
 
 <%= turbo_frame_tag "import_review" do %>
-  <% blocked = @rows.count { |row| row_unreadable?(row) } %>
-  <% bad_date = @rows.any? { |row| !row[:posted_on].ok? } %>
-  <% bad_amount = @rows.any? { |row| !row[:amount].ok? } %>
+  <% blocked = @rows.count(&:unreadable?) %>
+  <% bad_date = @rows.any? { |row| !row.posted_on.ok? } %>
+  <% bad_amount = @rows.any? { |row| !row.amount.ok? } %>
 
   <% if @error.present? %>
     <div class="flash flash-alert"><span><%= @error %></span></div>
@@ -76,18 +76,18 @@
         </thead>
         <tbody>
           <% @rows.each do |row| %>
-            <tr class="<%= "is-unreadable" if row_unreadable?(row) %>">
-              <% date = row[:posted_on] %>
+            <%= tag.tr class: class_names("is-unreadable" => row.unreadable?) do %>
+              <% date = row.posted_on %>
               <%= tag.td class: class_names("date", "is-bad" => !date.ok?) do %>
                 <%= date.ok? ? date.value.strftime("%d %b %Y") : date.value %>
               <% end %>
-              <td><%= row[:description].value %></td>
-              <% amount = row[:amount] %>
+              <td><%= row.description %></td>
+              <% amount = row.amount %>
               <%= tag.td class: class_names("amount", "is-bad" => !amount.ok?, "is-negative" => amount.ok? && amount.value.negative?) do %>
                 <%= amount.ok? ? money(amount.value, currency: @import.bank_account.currency) : (amount.value.presence || "—") %>
               <% end %>
-              <td class="amount"><%= money(row[:balance].value, currency: @import.bank_account.currency) if row[:balance].value %></td>
-            </tr>
+              <td class="amount"><%= money(row.balance, currency: @import.bank_account.currency) if row.balance %></td>
+            <% end %>
           <% end %>
         </tbody>
       </table>

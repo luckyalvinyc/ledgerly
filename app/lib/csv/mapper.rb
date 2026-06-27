@@ -21,6 +21,12 @@ module Csv
       def ok? = ok
     end
 
+    # A previewed row. Only the date and amount can fail to read; description and balance are
+    # shown as-is. A row can't be imported if either failing field didn't read.
+    PreviewRow = Data.define(:posted_on, :description, :amount, :balance) do
+      def unreadable? = !posted_on.ok? || !amount.ok?
+    end
+
     def initialize(mapping)
       @mapping = mapping
     end
@@ -45,14 +51,14 @@ module Csv
     # Per-field read for the review preview. Never raises: each cell says whether it parsed, and
     # keeps the raw text when it didn't, so the screen shows what it read and flags what it didn't.
     def preview(row)
-      value = amount(row)
+      parsed = amount(row)
 
-      {
+      PreviewRow.new(
         posted_on: date_cell(row),
-        description: Cell.new(value: description(row), ok: true),
-        amount: value ? Cell.new(value: value, ok: true) : Cell.new(value: resolve(row, :amount), ok: false),
-        balance: Cell.new(value: balance(row), ok: true)
-      }
+        description: description(row),
+        amount: Cell.new(value: parsed || resolve(row, :amount), ok: !parsed.nil?),
+        balance: balance(row)
+      )
     end
 
     private
