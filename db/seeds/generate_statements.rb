@@ -135,10 +135,10 @@ def write_signed_ddmm_narration(file, txns, opening) # comma, DD/MM/YYYY, ZAR, N
 end
 
 accounts = [
-  [ "unionbank_php.csv",  50_000, :write_debit_credit_mmdd ],
-  [ "northwind_usd.csv",  40_000, :write_signed_iso ],
-  [ "highstreet_gbp.csv", 30_000, :write_money_in_out_ddmm ],
-  [ "karoo_zar.csv",      60_000, :write_signed_ddmm_narration ]
+  [ "unionbank.csv",  50_000, :write_debit_credit_mmdd ],
+  [ "northwind.csv",  40_000, :write_signed_iso ],
+  [ "highstreet.csv", 30_000, :write_money_in_out_ddmm ],
+  [ "karoo.csv",      60_000, :write_signed_ddmm_narration ]
 ]
 
 accounts.each_with_index do |(file, opening, writer), index|

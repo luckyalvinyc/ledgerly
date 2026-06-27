@@ -11,10 +11,10 @@ demo.password = "DemoPassw0rd!"
 demo.save!
 
 statements = [
-  { name: "UnionBank",         currency: "PHP", file: "unionbank_php.csv" },
-  { name: "Northwind Trading", currency: "USD", file: "northwind_usd.csv" },
-  { name: "High Street Co",    currency: "GBP", file: "highstreet_gbp.csv" },
-  { name: "Karoo Supplies",    currency: "ZAR", file: "karoo_zar.csv" }
+  { name: "UnionBank",         currency: "PHP", file: "unionbank.csv" },
+  { name: "Northwind Trading", currency: "USD", file: "northwind.csv" },
+  { name: "High Street Co",    currency: "GBP", file: "highstreet.csv" },
+  { name: "Karoo Supplies",    currency: "ZAR", file: "karoo.csv" }
 ]
 
 statements.each do |statement|
