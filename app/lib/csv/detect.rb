@@ -2,14 +2,6 @@
 
 module Csv
   class Detect
-    Mapping = Data.define(
-      :currency,
-      :delimiter,
-      :column_map,
-      :amount_strategy,
-      :date_format
-    )
-
     class << self
       def call(io)
         header_line = io.readline
@@ -19,7 +11,7 @@ module Csv
         rows = read_sample_rows(io, delimiter: delimiter)
         date_format = detect_date_format(rows, header: column_map[:date])
 
-        Mapping.new(
+        Csv::Mapping.new(
           currency: nil,
           delimiter: delimiter,
           column_map: column_map,
