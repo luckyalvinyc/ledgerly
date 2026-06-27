@@ -30,7 +30,7 @@ class ImportsController < ApplicationController
   end
 
   def review
-    @mapping = @import.mapping || detected_mapping
+    @mapping = current_mapping
     load_preview
   end
 
@@ -42,7 +42,7 @@ class ImportsController < ApplicationController
   end
 
   def confirm
-    @mapping = params[:mapping].present? ? mapping_from(params) : (@import.mapping || detected_mapping)
+    @mapping = params[:mapping].present? ? mapping_from(params) : current_mapping
 
     if !@mapping.complete?
       @error = "Map a date, a description, and an amount before importing."
@@ -52,6 +52,7 @@ class ImportsController < ApplicationController
     end
 
     @import.update!(mapping: @mapping)
+    @import.bank_account.update!(mapping: @mapping)
 
     claimed = current_user.imports
       .where(id: @import.id, status: :reviewing)
@@ -68,6 +69,12 @@ class ImportsController < ApplicationController
 
     def set_import
       @import = current_user.imports.find(params[:id])
+    end
+
+    # Where the review starts: this import's own mapping, then the bank's remembered one, then
+    # a fresh detection.
+    def current_mapping
+      @import.mapping || @import.bank_account.mapping || detected_mapping
     end
 
     def detected_mapping
