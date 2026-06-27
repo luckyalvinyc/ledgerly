@@ -4,6 +4,11 @@ on:
   pull_request:
   push:
     branches: [ main ]
+    # Docs-only pushes skip CI, and since the deploy runs on CI completing, they skip the
+    # deploy too. A push that also touches code still runs both.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
 
 jobs:
   scan_ruby:
