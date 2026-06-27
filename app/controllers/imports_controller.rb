@@ -106,7 +106,7 @@ class ImportsController < ApplicationController
 
     def mapping_from(params)
       attrs = params.expect(mapping: [ :delimiter, :amount_strategy, :date_format, column_map: COLUMN_FIELDS ])
-      column_map = attrs[:column_map].to_h.symbolize_keys.compact_blank
+      column_map = attrs[:column_map].to_h.compact_blank
 
       Csv::Mapping.new(
         currency: @import.bank_account.currency,
