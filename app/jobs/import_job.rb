@@ -17,14 +17,14 @@ class ImportJob < ApplicationJob
     import.reload
 
     currency = import.bank_account.currency
-    mapping = import.file.open { |io| Csv::Detect.call(io) }
+    mapping = import.mapping || import.file.open { |io| Csv::Detect.call(io) }
     mapper = Csv::Mapper.new(mapping.with(currency: currency))
 
     total = 0
     failed = 0
 
     import.file.open do |file|
-      Csv::Parser.new(mapper).each_row(file).each_slice(BATCH_SIZE) do |results|
+      Csv::Parser.foreach(file, mapper:).each_slice(BATCH_SIZE) do |results|
         valid = results.select(&:ok?)
         failed += results.length - valid.length
         total += results.length

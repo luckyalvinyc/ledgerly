@@ -13,5 +13,8 @@ class Import < ApplicationRecord
   has_many :transactions, dependent: :destroy
   has_one_attached :file
 
+  # Csv::Mapping is its own coder, so import.mapping is a Csv::Mapping value object.
+  serialize :mapping, coder: Csv::Mapping
+
   enum :status, STATUSES.index_by(&:itself), default: :reviewing
 end
