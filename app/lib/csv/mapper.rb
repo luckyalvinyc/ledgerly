@@ -17,16 +17,6 @@ module Csv
       end
     end
 
-    Cell = Data.define(:value, :ok) do
-      def ok? = ok
-    end
-
-    # A previewed row. Only the date and amount can fail to read; description and balance are
-    # shown as-is. A row can't be imported if either failing field didn't read.
-    PreviewRow = Data.define(:posted_on, :description, :amount, :balance) do
-      def unreadable? = !posted_on.ok? || !amount.ok?
-    end
-
     def initialize(mapping)
       @mapping = mapping
     end
@@ -46,6 +36,16 @@ module Csv
       raise Error, "row has no amount" if parsed.amount.nil?
 
       parsed
+    end
+
+    # A previewed row. Only the date and amount can fail to read; description and balance are
+    # shown as-is. A row can't be imported if either failing field didn't read.
+    PreviewRow = Data.define(:posted_on, :description, :amount, :balance) do
+      def unreadable? = !posted_on.ok? || !amount.ok?
+    end
+
+    Cell = Data.define(:value, :ok) do
+      def ok? = ok
     end
 
     # Per-field read for the review preview. Never raises: each cell says whether it parsed, and
