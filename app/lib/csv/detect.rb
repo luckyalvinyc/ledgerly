@@ -11,7 +11,7 @@ module Csv
         rows = read_sample_rows(io, delimiter: delimiter)
         date_format = detect_date_format(rows, header: column_map[:date])
 
-        Csv::Mapping.new(
+        Mapping.new(
           currency: nil,
           delimiter: delimiter,
           column_map: column_map,
