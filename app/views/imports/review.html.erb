@@ -77,10 +77,11 @@
       <%= submit_tag "Yes, import these transactions",
         formaction: confirm_import_path(@import),
         class: "btn btn-primary",
-        data: { turbo_submits_with: "Importing..." } %>
+        data: { turbo_frame: "_top", turbo_submits_with: "Importing..." } %>
       <%= link_to "Use a different file",
         new_bank_account_import_path(@import.bank_account),
-        class: "btn" %>
+        class: "btn",
+        data: { turbo_frame: "_top" } %>
     </div>
   <% end %>
 <% end %>
