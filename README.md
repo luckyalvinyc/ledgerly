@@ -56,10 +56,12 @@ server, with everything on SQLite.
 
 ## Architecture
 
-Ledgerly uses a functional core with an imperative shell. The core is plain Ruby with no
-database and no input or output. It takes data in and gives data out, so it is easy to
-test. The shell is the part that touches the world: controllers, Active Record models, and
-the background job.
+Ledgerly leans on a functional core with an imperative shell. The core (`app/lib`) holds the
+logic with no database, no web, and no writes. `Money`, `Pnl`, `Csv::Mapper`, and `Csv::Mapping`
+are pure, data in and data out. The two CSV readers, `Csv::Detect` and `Csv::Parser`, are the
+one concession: they stream from an IO the shell opens for them, so they do input but touch
+nothing else. The shell, controllers, Active Record models, and the import job, owns the rest:
+files, the database, and rendering.
 
 ```mermaid
 flowchart TB
@@ -71,7 +73,7 @@ flowchart TB
     Job["Import job (Solid Queue)"]
   end
 
-  subgraph Core["Functional core: pure Ruby, no database"]
+  subgraph Core["Functional core: plain Ruby, no database"]
     Money["Money (integer cents)"]
     Detect["Csv::Detect"]
     Mapper["Csv::Mapper"]
