@@ -25,7 +25,7 @@ class ImportTest < ActionDispatch::IntegrationTest
     import = bank_account.imports.sole
 
     assert_enqueued_with(job: ImportJob) do
-      post confirm_import_path(import)
+      post confirm_import_path(import), params: { mapping: detected_mapping(import) }
     end
 
     perform_enqueued_jobs
@@ -59,9 +59,7 @@ class ImportTest < ActionDispatch::IntegrationTest
 
     first_import = bank_account.imports.sole
 
-    perform_enqueued_jobs do
-      post confirm_import_path(first_import)
-    end
+    confirm_import(first_import)
 
     first_import.reload
     assert_equal 1, first_import.total_rows
@@ -79,9 +77,7 @@ class ImportTest < ActionDispatch::IntegrationTest
     second_import = bank_account.imports.last
     assert_not_equal second_import, first_import
 
-    perform_enqueued_jobs do
-      post confirm_import_path(second_import)
-    end
+    confirm_import(second_import)
 
     second_import.reload
     assert_equal 1, second_import.total_rows
@@ -110,9 +106,7 @@ class ImportTest < ActionDispatch::IntegrationTest
 
     import = bank_account.imports.sole
 
-    perform_enqueued_jobs do
-      post confirm_import_path(import)
-    end
+    confirm_import(import)
 
     import.reload
     assert_equal "completed", import.status
@@ -141,9 +135,7 @@ class ImportTest < ActionDispatch::IntegrationTest
 
     import = bank_account.imports.sole
 
-    perform_enqueued_jobs do
-      post confirm_import_path(import)
-    end
+    confirm_import(import)
 
     assert_equal 2, bank_account.transactions.count
 
@@ -178,9 +170,7 @@ class ImportTest < ActionDispatch::IntegrationTest
 
       import = bank_account.imports.sole
 
-      perform_enqueued_jobs do
-        post confirm_import_path(import)
-      end
+      confirm_import(import)
 
       import.reload
       assert_equal "completed", import.status

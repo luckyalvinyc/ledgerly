@@ -35,11 +35,24 @@ module ActiveSupport
         file: file
       }
 
-      import = bank_account.imports.sole
+      confirm_import(bank_account.imports.sole)
+    end
 
+    # Confirm an import the way the UI does: submit the detected mapping from the review form.
+    def confirm_import(import, mapping: detected_mapping(import))
       perform_enqueued_jobs do
-        post confirm_import_path(import)
+        post confirm_import_path(import), params: { mapping: mapping }
       end
+    end
+
+    def detected_mapping(import)
+      mapping = import.file.open { |io| Csv::Detect.call(io) }
+      {
+        delimiter: mapping.delimiter,
+        amount_strategy: mapping.amount_strategy,
+        date_format: mapping.date_format,
+        column_map: mapping.column_map
+      }
     end
 
     def create_csv_file(&block)

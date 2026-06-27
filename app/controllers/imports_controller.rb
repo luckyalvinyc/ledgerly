@@ -42,7 +42,7 @@ class ImportsController < ApplicationController
   end
 
   def confirm
-    @mapping = params[:mapping].present? ? mapping_from(params) : current_mapping
+    @mapping = mapping_from(params)
 
     if !@mapping.complete?
       @error = "Map a date, a description, and an amount before importing."
@@ -64,15 +64,10 @@ class ImportsController < ApplicationController
 
   private
 
-    SAMPLE_SIZE = 15
-    COLUMN_FIELDS = %i[date description amount debit credit balance reference].freeze
-
     def set_import
       @import = current_user.imports.find(params[:id])
     end
 
-    # Where the review starts: this import's own mapping, then the bank's remembered one, then
-    # a fresh detection.
     def current_mapping
       @import.mapping || @import.bank_account.mapping || detected_mapping
     end
@@ -80,6 +75,8 @@ class ImportsController < ApplicationController
     def detected_mapping
       @import.file.open { |io| Csv::Detect.call(io) }.with(currency: @import.bank_account.currency)
     end
+
+    SAMPLE_SIZE = 15
 
     # Headers come from the chosen delimiter, so the column selects follow it. The sample keeps
     # failures (Csv::Parser::Result) so a wrong mapping is visible in the preview.
@@ -89,9 +86,11 @@ class ImportsController < ApplicationController
       @results = @import.file.open { |io| Csv::Parser.foreach(io, mapper:).first(SAMPLE_SIZE) }
     end
 
+    COLUMN_FIELDS = %i[date description amount debit credit balance reference].freeze
+
     def mapping_from(params)
       attrs = params.expect(mapping: [ :delimiter, :amount_strategy, :date_format, column_map: COLUMN_FIELDS ])
-      column_map = attrs[:column_map].to_h.symbolize_keys.transform_values(&:presence).compact
+      column_map = attrs[:column_map].to_h.symbolize_keys.compact_blank
 
       Csv::Mapping.new(
         currency: @import.bank_account.currency,
