@@ -25,9 +25,8 @@ number: what you actually made.
 
 ## What it does
 
-The goal is simple accounting for people who do not have a finance degree. Plain words,
-few steps, one number up front, and detail tucked away until you ask for it. Simple must
-never mean wrong, so the money math is exact and the numbers can be trusted.
+Simple accounting for people without a finance degree. Plain words, few steps, one number up
+front, detail tucked away until you ask. Simple never means wrong, so the money math is exact.
 
 The flow is short:
 
@@ -109,16 +108,14 @@ flowchart LR
 
 Notes on the import:
 
-- The review is editable. Every detected field (date format, separator, amount style, and
-  each column) can be changed, and the preview re-reads as you go. It reads each row cell by
-  cell, so a row still shows the columns it could read and flags any cell it could not, which
-  points you at the field to fix. Those controls stay tucked away unless detection struggled.
-- Dates are read precisely when the format is clear. When a slash date is genuinely
-  ambiguous (every day is 12 or under), it falls back to month first, and the flagged preview
-  lets you switch the format if the guess was wrong.
-- Once confirmed, the mapping is remembered on the bank account, so the next statement in the
-  same format imports in one click. If the bank changes its layout, Ledgerly notices the
-  columns no longer fit and detects afresh.
+- The review is editable but quiet. Detection fills in every field (date format, separator,
+  amount style, each column); the controls stay tucked away unless a read fails. The preview
+  re-reads as you change a field, cell by cell, so a row shows the columns it could read and
+  flags the one it could not.
+- Ambiguous slash dates (every day 12 or under) fall back to month first, and the flagged
+  preview lets you switch the format if the guess was wrong.
+- A confirmed mapping is remembered on the bank account, so the same format imports in one
+  click next time. If the bank changes its layout, Ledgerly detects afresh.
 - Large files are streamed and saved in batches, so a big statement does not block the app.
 - Each row gets a fingerprint, with a unique index, so importing the same file twice adds
   nothing new.
@@ -137,10 +134,9 @@ operating expenses, net profit) and there is no chart of accounts. That is on pu
 reader is a small business owner, not an accountant, so the page shows three plain rows,
 money in, money out, profit, and one big number.
 
-Two things would make a naive sign-based number wrong: transfers between your own accounts,
-and personal spending mixed into a business account. To a normal person these are the same
-thing, money that should not count. So there is one switch per row, "counts toward profit",
-on by default. Flip it off and the row drops out of profit. No categories, no jargon.
+Two real cases make a naive total wrong: transfers between your own accounts, and personal
+spending in a business account. Both are just money that should not count, so there is one
+switch per row, "counts toward profit", on by default. No categories, no jargon.
 
 The fuller picture (named categories with an expense breakdown, an accrual view, a gross
 versus operating split) is a natural next step, left out of the demo on purpose to stay
@@ -170,10 +166,9 @@ transactions, and the uploaded files with it, so a mistake is cheap to undo.
 - **Hand written auth with Argon2id, not a gem like Devise.** The login work is small and
   visible. Login is constant time so it does not leak which emails exist, and sessions live
   in the database so they can be revoked.
-- **One include switch, not a tax taxonomy.** Two real cases break a naive profit and loss:
-  transfers between your own accounts, and personal spending in a business account. To a
-  normal person these are the same thing, money that should not count. So there is one plain
-  switch per row, "counts toward profit", on by default. No jargon.
+- **One include switch, not a tax taxonomy.** A single "counts toward profit" toggle per row
+  (on by default) handles the cases that break a naive total, transfers and personal spending,
+  with no categories or jargon.
 - **Mapping is data, not code.** Bank formats are detected, shown on an editable review, and
   remembered per bank, never hard coded. A new bank never needs a code change or a deploy, a
   bad guess is fixed on the review screen before any data is saved, and the next statement in
@@ -195,14 +190,11 @@ correct, with a clear path forward.
 - **One server, on SQLite.** Excellent for a single busy node, but it does not scale
   horizontally, and a lost box loses data without an off site backup. The upgrade is
   Postgres plus off server backups when traffic or durability demand it, not before.
-- **Detection is good, not perfect, but you are never stuck.** It reads the common CSV shapes,
-  and when a slash date is truly ambiguous it assumes month first. Anything it gets wrong you
-  fix on the editable review, which flags the exact cells it could not read, and the corrected
-  mapping is remembered for next time. Two honest edges remain: a bank account remembers one
-  format, so a bank that alternates between two layouts is re-detected on each switch rather
-  than kept in a library; and a file only imports if it maps to our columns (a date, a
-  description, an amount), so a fundamentally different shape needs a model change, not just a
-  mapping.
+- **Detection is good, not perfect, but you are never stuck.** Anything it misreads you fix on
+  the editable review, and the corrected mapping is remembered. Two honest edges: a bank
+  remembers one format, so a bank that alternates layouts is re-detected each switch, not kept
+  in a library; and a file must map to our columns (date, description, amount), so a
+  fundamentally different shape needs a model change, not just a mapping.
 - **Single user, no PDF, no audit log, no team roles.** CSV export covers getting your data
   out. The rest is straightforward to add when it earns its place.
 
