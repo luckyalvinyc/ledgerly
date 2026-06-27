@@ -260,4 +260,37 @@ class ImportTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     assert import.reload.reviewing?
   end
+
+  test "remembers the mapping for the next import to the same bank" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "01/02/2026", "Sale", "500.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    first = bank_account.imports.sole
+
+    post confirm_import_path(first), params: {
+      mapping: {
+        delimiter: ",",
+        amount_strategy: "signed",
+        date_format: "%d/%m/%Y",
+        column_map: { date: "Date", description: "Description", amount: "Amount" }
+      }
+    }
+
+    assert_equal "%d/%m/%Y", bank_account.reload.mapping.date_format
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "03/04/2026", "Sale", "100.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    second = bank_account.imports.where.not(id: first.id).sole
+
+    get review_import_path(second)
+    assert_response :success
+    assert_select "select[name=?] option[selected][value=?]", "mapping[date_format]", "%d/%m/%Y"
+  end
 end
