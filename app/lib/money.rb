@@ -4,6 +4,11 @@ class Money
   SUPPORTED_CURRENCIES = Set.new([ "ZAR", "USD", "GBP", "PHP" ].sort)
 
   class << self
+    # Wrap a number of cents, or pass through a Money as-is.
+    def for(value)
+      value.is_a?(Money) ? value : new(value)
+    end
+
     def parse!(amount)
       return if amount.nil?
 

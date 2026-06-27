@@ -3,6 +3,17 @@
 module Pnl
   Period = Data.define(:starts_on, :ends_on, :label) do
     class << self
+      # Build a period from a date for the given granularity, or pass through a Period as-is.
+      def for(value, granularity: "month")
+        return value if value.is_a?(Period)
+
+        case granularity.to_s
+        when "quarter" then quarter(value)
+        when "year" then year(value)
+        else month(value)
+        end
+      end
+
       def month(date)
         new(
           starts_on: date.beginning_of_month,
@@ -44,6 +55,9 @@ module Pnl
   extend self
 
   def build(period:, currency:, revenue:, expenses:)
+    revenue = Money.for(revenue)
+    expenses = Money.for(expenses)
+
     Statement.new(
       period: period,
       currency: currency,
