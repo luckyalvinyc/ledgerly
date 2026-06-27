@@ -97,8 +97,14 @@ class ImportsController < ApplicationController
 
       @import.file.open do |io|
         csv = CSV.new(io, headers: true, skip_blanks: true, col_sep: @mapping.delimiter)
-        @rows = csv.first(SAMPLE_SIZE).map { |row| mapper.preview(row) }
-        @headers = csv.headers || []
+
+        @rows = csv
+          .first(SAMPLE_SIZE)
+          .map { |row| mapper.preview(row) }
+          .sort_by { |row| row.posted_on.value }
+          .reverse
+
+        @headers = csv.headers
       end
     end
 
