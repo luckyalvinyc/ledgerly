@@ -26,8 +26,11 @@ module Csv
     end
 
     def call(row)
+      date = posted_on(row)
+      raise Error, "could not read the date" if !date.ok?
+
       parsed = ParsedRow.new(
-        posted_on: posted_on(row),
+        posted_on: date.value,
         description: description(row),
         reference: resolve(row, :reference),
         amount: amount(row),
@@ -54,7 +57,7 @@ module Csv
       parsed = amount(row)
 
       PreviewRow.new(
-        posted_on: date_cell(row),
+        posted_on: posted_on(row),
         description: description(row),
         amount: Cell.new(value: parsed || resolve(row, :amount), ok: !parsed.nil?),
         balance: balance(row)
@@ -65,12 +68,8 @@ module Csv
 
       def posted_on(row)
         value = resolve(row, :date)
-        Date.strptime(value, @mapping.date_format)
-      end
-
-      def date_cell(row)
-        value = resolve(row, :date)
-        Cell.new(value: Date.strptime(value.to_s, @mapping.date_format), ok: true)
+        value = Date.strptime(value, @mapping.date_format)
+        Cell.new(value: value, ok: true)
       rescue ArgumentError, TypeError
         Cell.new(value: value, ok: false)
       end

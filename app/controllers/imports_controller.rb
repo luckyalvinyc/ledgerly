@@ -35,7 +35,6 @@ class ImportsController < ApplicationController
     @adjust_open = @rows.any?(&:unreadable?)
   end
 
-  # Re-renders the review frame for the mapping currently in the form (live preview).
   def preview
     @mapping = mapping_from(params)
     load_preview
@@ -90,20 +89,14 @@ class ImportsController < ApplicationController
 
     SAMPLE_SIZE = 15
 
-    # The sample is read cell by cell, so a row still shows the columns it could read and flags
-    # the ones it couldn't. Headers come from the same pass, so the column selects follow the file.
+    # Rows are shown in file order. A statement reads newest first, so the preview does too, and
+    # since nothing is sorted, changing the date format re-flags rows but never reshuffles them.
     def load_preview
       mapper = Csv::Mapper.new(@mapping)
 
       @import.file.open do |io|
         csv = CSV.new(io, headers: true, skip_blanks: true, col_sep: @mapping.delimiter)
-
-        @rows = csv
-          .first(SAMPLE_SIZE)
-          .map { |row| mapper.preview(row) }
-          .sort_by { |row| row.posted_on.value }
-          .reverse
-
+        @rows = csv.first(SAMPLE_SIZE).map { |row| mapper.preview(row) }
         @headers = csv.headers
       end
     end
@@ -123,7 +116,6 @@ class ImportsController < ApplicationController
       )
     end
 
-    # Where the import flow should return to, set when the flow was entered.
     def import_return_to(import)
       session[:import_return_to].presence || bank_account_path(import.bank_account)
     end

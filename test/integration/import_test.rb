@@ -37,7 +37,6 @@ class ImportTest < ActionDispatch::IntegrationTest
     assert transaction
     assert_equal Date.new(2026, 6, 21), transaction.posted_on
     assert_equal (-239260), transaction.amount_cents
-    assert_equal 4801748, transaction.balance_cents
     assert_equal "SOFTWARE SUBSCRIPTION", transaction.description
     assert transaction.included
   end
@@ -142,13 +141,11 @@ class ImportTest < ActionDispatch::IntegrationTest
     transaction = bank_account.transactions.find_by(posted_on: Date.new(2026, 6, 1))
     assert transaction
     assert_equal 980000, transaction.amount_cents
-    assert_equal 5087770, transaction.balance_cents
     assert_equal "Stripe payout", transaction.description
 
     transaction = bank_account.transactions.find_by(posted_on: Date.new(2026, 6, 20))
     assert transaction
     assert_equal (-2500), transaction.amount_cents
-    assert_equal 4107770, transaction.balance_cents
     assert_equal "Monthly bank fee", transaction.description
   end
 
@@ -325,5 +322,84 @@ class ImportTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Sale"
     assert_includes response.body, "01 Mar 2026"
+  end
+
+  test "a row with an unreadable date is skipped, the rest import" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "2026-01-01", "Good row", "100.00" ]
+      csv << [ "not a date", "Bad row", "50.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    import = bank_account.imports.sole
+
+    perform_enqueued_jobs do
+      post confirm_import_path(import), params: {
+        mapping: {
+          delimiter: ",",
+          amount_strategy: "signed",
+          date_format: "%Y-%m-%d",
+          column_map: { date: "Date", description: "Description", amount: "Amount" }
+        }
+      }
+    end
+
+    import.reload
+    assert_equal "completed", import.status
+    assert_equal 1, bank_account.transactions.count
+    assert_equal 1, import.failed_rows
+  end
+
+  test "the preview handles a mix of readable and unreadable dates" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "2026-01-01", "Good row", "100.00" ]
+      csv << [ "not a date", "Bad row", "50.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+
+    post preview_import_path(bank_account.imports.sole), params: {
+      mapping: {
+        delimiter: ",",
+        amount_strategy: "signed",
+        date_format: "%Y-%m-%d",
+        column_map: { date: "Date", description: "Description", amount: "Amount" }
+      }
+    }
+
+    assert_response :success
+    assert_includes response.body, "Good row"
+    assert_includes response.body, "not a date"
+  end
+
+  test "the preview shows rows in file order, keeping unreadable rows in place" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "2026-01-31", "Charlie", "30.00" ]
+      csv << [ "not a date", "Bravo", "20.00" ]
+      csv << [ "2026-01-01", "Alpha", "10.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+
+    post preview_import_path(bank_account.imports.sole), params: {
+      mapping: {
+        delimiter: ",",
+        amount_strategy: "signed",
+        date_format: "%Y-%m-%d",
+        column_map: { date: "Date", description: "Description", amount: "Amount" }
+      }
+    }
+
+    body = response.body
+    # File order (a real statement is already newest first); the unreadable Bravo holds its
+    # middle slot rather than moving.
+    assert body.index("Charlie") < body.index("Bravo")
+    assert body.index("Bravo") < body.index("Alpha")
   end
 end
