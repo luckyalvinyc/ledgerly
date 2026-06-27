@@ -74,16 +74,16 @@ class ImportsController < ApplicationController
     # has nothing remembered, and a bank that changed format won't have those columns, so both
     # fall back to a fresh detection.
     def current_mapping
-      remembered = @import.bank_account.mapping
+      mapping = @import.bank_account.mapping
 
-      if remembered && remembered_fits?(remembered)
-        remembered
+      if mapping.present? && still_compatible?(mapping)
+        mapping
       else
         @import.file.open { |io| Csv::Detect.call(io) }.with(currency: @import.bank_account.currency)
       end
     end
 
-    def remembered_fits?(mapping)
+    def still_compatible?(mapping)
       headers = @import.file.open { |io| CSV.parse_line(io.readline, col_sep: mapping.delimiter) }
       mapping.column_map.values.all? { |header| headers.include?(header) }
     end
