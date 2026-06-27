@@ -62,6 +62,20 @@ class BankAccountTest < ActionDispatch::IntegrationTest
     assert_match "9800.00", response.body
   end
 
+  test "the csv export quotes descriptions that look like spreadsheet formulas" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "PHP")
+
+    import_rows(bank_account) do |csv|
+      csv << [ "Date", "Description", "Amount", "Currency", "Running Balance" ]
+      csv << [ "2026-06-01", "=SUM(A1:A9)", "9800.00", "USD", "0" ]
+    end
+
+    get bank_account_path(bank_account, format: :csv)
+
+    assert_response :success
+    assert_includes response.body, ",'=SUM(A1:A9)"
+  end
+
   test "deleting an account removes it and its transactions" do
     bank_account = @user.bank_accounts.create!(name: "Doomed", currency: "PHP")
 
