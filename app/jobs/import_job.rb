@@ -17,8 +17,7 @@ class ImportJob < ApplicationJob
     import.reload
 
     currency = import.bank_account.currency
-    mapping = import.mapping || import.file.open { |io| Csv::Detect.call(io) }
-    mapper = Csv::Mapper.new(mapping.with(currency: currency))
+    mapper = Csv::Mapper.new(import.mapping.with(currency: currency))
 
     total = 0
     failed = 0
