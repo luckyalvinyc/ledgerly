@@ -1,4 +1,20 @@
 @layer pages {
+  .mapping-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--s-4);
+    margin-bottom: var(--s-5);
+    padding: var(--s-4);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .transactions-table .unreadable td {
+    color: var(--muted);
+    font-style: italic;
+  }
+
   .steps {
     display: flex;
     flex-wrap: wrap;

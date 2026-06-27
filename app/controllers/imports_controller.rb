@@ -2,6 +2,7 @@
 
 class ImportsController < ApplicationController
   before_action :redirect_if_unauthenticated
+  before_action :set_import, only: [ :show, :review, :preview, :confirm ]
 
   helper_method :import_return_to
 
@@ -26,23 +27,31 @@ class ImportsController < ApplicationController
   end
 
   def show
-    @import = current_user.imports.find(params[:id])
   end
 
   def review
-    @import = current_user.imports.find(params[:id])
-    currency = @import.bank_account.currency
+    @mapping = @import.mapping || detected_mapping
+    load_preview
+  end
 
-    @import.file.open do |io|
-      @mapping = Csv::Detect.call(io).with(currency: currency)
-      mapper = Csv::Mapper.new(@mapping)
-      @rows = Csv::Parser.new(mapper).each_row(io).lazy.filter_map(&:row).first(10)
-        .sort_by(&:posted_on).reverse
-    end
+  # Re-renders the review frame for the mapping currently in the form (live preview).
+  def preview
+    @mapping = mapping_from(params)
+    load_preview
+    render :review
   end
 
   def confirm
-    @import = current_user.imports.find(params[:id])
+    @mapping = params[:mapping].present? ? mapping_from(params) : (@import.mapping || detected_mapping)
+
+    if !@mapping.complete?
+      @error = "Map a date, a description, and an amount before importing."
+      load_preview
+      render :review, status: :unprocessable_content
+      return
+    end
+
+    @import.update!(mapping: @mapping)
 
     claimed = current_user.imports
       .where(id: @import.id, status: :reviewing)
@@ -53,6 +62,38 @@ class ImportsController < ApplicationController
   end
 
   private
+
+    SAMPLE_SIZE = 15
+    COLUMN_FIELDS = %i[date description amount debit credit balance reference].freeze
+
+    def set_import
+      @import = current_user.imports.find(params[:id])
+    end
+
+    def detected_mapping
+      @import.file.open { |io| Csv::Detect.call(io) }.with(currency: @import.bank_account.currency)
+    end
+
+    # Headers come from the chosen delimiter, so the column selects follow it. The sample keeps
+    # failures (Csv::Parser::Result) so a wrong mapping is visible in the preview.
+    def load_preview
+      @headers = @import.file.open { |io| CSV.parse_line(io.readline, col_sep: @mapping.delimiter) }
+      mapper = Csv::Mapper.new(@mapping)
+      @results = @import.file.open { |io| Csv::Parser.foreach(io, mapper:).first(SAMPLE_SIZE) }
+    end
+
+    def mapping_from(params)
+      attrs = params.expect(mapping: [ :delimiter, :amount_strategy, :date_format, column_map: COLUMN_FIELDS ])
+      column_map = attrs[:column_map].to_h.symbolize_keys.transform_values(&:presence).compact
+
+      Csv::Mapping.new(
+        currency: @import.bank_account.currency,
+        delimiter: attrs[:delimiter],
+        column_map: column_map,
+        amount_strategy: attrs[:amount_strategy].to_sym,
+        date_format: attrs[:date_format]
+      )
+    end
 
     # Where the import flow should return to, set when the flow was entered.
     def import_return_to(import)

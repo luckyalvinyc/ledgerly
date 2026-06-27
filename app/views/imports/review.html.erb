@@ -2,57 +2,85 @@
   trail: [["Dashboard", root_path], [@import.bank_account.name, @import.bank_account], ["Import", nil]] %>
 
 <h1 class="page-title">Does this look right?</h1>
-<p class="muted">Here's what we read from <strong><%= @import.filename %></strong>. Nothing has been saved yet.</p>
+<p class="muted">Here's what we read from <strong><%= @import.filename %></strong>. Adjust anything that looks off, the preview updates as you go. Nothing is saved until you import.</p>
 
 <%= render "steps", current: 2 %>
 
-<table class="transactions-table">
-  <thead>
-    <tr>
-      <th class="date">Date</th>
-      <th>Description</th>
-      <th class="amount">Amount</th>
-      <th class="amount">Balance</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @rows.each do |row| %>
-      <tr>
-        <td class="date"><%= row.posted_on.strftime("%d %b %Y") %></td>
-        <td><%= row.description %></td>
-        <%= tag.td class: class_names("amount", "is-negative" => row.amount.negative?) do %>
-          <%= money(row.amount, currency: @import.bank_account.currency) %>
+<%= turbo_frame_tag "import_review" do %>
+  <% if @error.present? %>
+    <div class="flash flash-alert"><span><%= @error %></span></div>
+  <% end %>
+
+  <%= form_with url: preview_import_path(@import), data: { controller: "auto-submit" } do %>
+    <div class="mapping-grid">
+      <div class="field">
+        <%= label_tag "mapping_date_format", "Date format" %>
+        <%= select_tag "mapping[date_format]",
+          options_for_select(ImportsHelper::DATE_FORMATS, @mapping.date_format),
+          data: { action: "change->auto-submit#submit" } %>
+      </div>
+      <div class="field">
+        <%= label_tag "mapping_delimiter", "Column separator" %>
+        <%= select_tag "mapping[delimiter]",
+          options_for_select(ImportsHelper::DELIMITERS, @mapping.delimiter),
+          data: { action: "change->auto-submit#submit" } %>
+      </div>
+      <div class="field">
+        <%= label_tag "mapping_amount_strategy", "Amount style" %>
+        <%= select_tag "mapping[amount_strategy]",
+          options_for_select(ImportsHelper::AMOUNT_STRATEGIES, @mapping.amount_strategy.to_s),
+          data: { action: "change->auto-submit#submit" } %>
+      </div>
+
+      <% column_fields(@mapping.amount_strategy).each do |field, label| %>
+        <div class="field">
+          <%= label_tag "mapping_column_map_#{field}", label %>
+          <%= select_tag "mapping[column_map][#{field}]",
+            options_for_select([ [ "Not used", "" ] ] + @headers.map { |h| [ h, h ] }, @mapping.column_map[field]),
+            data: { action: "change->auto-submit#submit" } %>
+        </div>
+      <% end %>
+    </div>
+
+    <table class="transactions-table">
+      <thead>
+        <tr>
+          <th class="date">Date</th>
+          <th>Description</th>
+          <th class="amount">Amount</th>
+          <th class="amount">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @results.each do |result| %>
+          <% if result.ok? %>
+            <% row = result.row %>
+            <tr>
+              <td class="date"><%= row.posted_on.strftime("%d %b %Y") %></td>
+              <td><%= row.description %></td>
+              <%= tag.td class: class_names("amount", "is-negative" => row.amount.negative?) do %>
+                <%= money(row.amount, currency: @import.bank_account.currency) %>
+              <% end %>
+              <td class="amount"><%= money(row.balance, currency: @import.bank_account.currency) if row.balance %></td>
+            </tr>
+          <% else %>
+            <tr class="unreadable">
+              <td colspan="4">Could not read this row with the current settings.</td>
+            </tr>
+          <% end %>
         <% end %>
-        <td class="amount"><%= money(row.balance, currency: @import.bank_account.currency) %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-<p class="muted">Showing the first <%= @rows.size %> rows.</p>
+      </tbody>
+    </table>
+    <p class="muted">Showing the first <%= @results.size %> rows.</p>
 
-<details class="format-details">
-  <summary>How we read your file</summary>
-  <dl>
-    <dt>Delimiter</dt>
-    <dd><%= @mapping.delimiter %></dd>
-    <dt>Amount style</dt>
-    <dd><%= @mapping.amount_strategy %></dd>
-    <dt>Date format</dt>
-    <dd><%= @mapping.date_format %></dd>
-  </dl>
-  <ul>
-    <% @mapping.column_map.each do |field, header| %>
-      <li><%= field %>: <strong><%= header %></strong></li>
-    <% end %>
-  </ul>
-</details>
-
-<div class="actions">
-  <%= button_to "Yes, import these transactions",
-    confirm_import_path(@import),
-    class: "btn btn-primary",
-    method: :post %>
-  <%= link_to "Use a different file",
-    new_bank_account_import_path(@import.bank_account),
-    class: "btn" %>
-</div>
+    <div class="actions">
+      <%= submit_tag "Yes, import these transactions",
+        formaction: confirm_import_path(@import),
+        class: "btn btn-primary",
+        data: { turbo_submits_with: "Importing..." } %>
+      <%= link_to "Use a different file",
+        new_bank_account_import_path(@import.bank_account),
+        class: "btn" %>
+    </div>
+  <% end %>
+<% end %>

@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :imports, only: [ :show ] do
     member do
       get :review
+      post :preview
       post :confirm
     end
   end
