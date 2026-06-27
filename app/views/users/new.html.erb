@@ -4,7 +4,7 @@
 <%= form_with model: @user do |f| %>
   <div class="field">
     <%= f.label :email, "Email" %>
-    <%= f.email_field :email, required: true, autocomplete: "username" %>
+    <%= f.email_field :email, required: true, autocomplete: "username", autofocus: true %>
     <%= render "shared/field_errors", model: @user, attribute: :email %>
   </div>
   <div class="field">

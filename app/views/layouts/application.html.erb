@@ -3,6 +3,9 @@
   <%= render "layouts/shared/head" %>
 
   <body>
+    <% unless content_for?(:hide_skip_link) %>
+      <a href="#main" class="skip-link">Skip to content</a>
+    <% end %>
     <header class="site-header">
       <div class="bar">
         <%= link_to root_path, class: "brand" do %>
@@ -16,7 +19,7 @@
         </div>
       </div>
     </header>
-    <main class="container">
+    <main id="main" class="container" tabindex="-1">
       <%= render "shared/flash" %>
       <%= yield %>
     </main>

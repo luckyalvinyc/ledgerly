@@ -9,6 +9,23 @@
     min-block-size: 2.75rem;
   }
 
+  .skip-link {
+    position: absolute;
+    left: var(--s-3);
+    top: var(--s-3);
+    z-index: 1000;
+    padding: var(--s-2) var(--s-3);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transform: translateY(-150%);
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
   .section-head {
     display: flex;
     align-items: baseline;

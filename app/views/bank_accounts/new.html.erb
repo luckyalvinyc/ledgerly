@@ -1,10 +1,12 @@
+<% content_for :hide_skip_link, true %>
+
 <h1 class="page-title">Add a bank account</h1>
 <p>Give it a name and pick its currency. You'll import a statement next.</p>
 
 <%= form_with model: @bank_account do |f| %>
   <div class="field">
     <%= f.label :name, "Account name" %>
-    <%= f.text_field :name %>
+    <%= f.text_field :name, autofocus: true %>
     <%= render "shared/field_errors", model: @bank_account, attribute: :name %>
   </div>
   <div class="field">

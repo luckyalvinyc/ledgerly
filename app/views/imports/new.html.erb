@@ -1,3 +1,5 @@
+<% content_for :hide_skip_link, true %>
+
 <%= render "shared/crumbs",
   trail: [["Dashboard", root_path], [@bank_account.name, @bank_account], ["Import", nil]] %>
 
@@ -8,7 +10,7 @@
 
 <%= form_with url: bank_account_imports_path(@bank_account) do |f| %>
   <div class="field">
-    <%= f.file_field :file, required: true, accept: ".csv,text/csv" %>
+    <%= f.file_field :file, required: true, accept: ".csv,text/csv", autofocus: true %>
     <p class="hint">Accepted: a .csv file exported from your bank.</p>
   </div>
   <%= f.submit "Continue", class: "btn btn-primary" %>
