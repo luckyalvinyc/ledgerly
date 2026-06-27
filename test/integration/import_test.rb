@@ -309,4 +309,21 @@ class ImportTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Refund"
     assert_includes response.body, "01 Feb 2026"
   end
+
+  test "the first import to a new bank detects the format with nothing remembered" do
+    bank_account = @user.bank_accounts.create!(name: "Fresh Bank", currency: "USD")
+    assert_nil bank_account.mapping
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "2026-03-01", "Sale", "200.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+
+    get review_import_path(bank_account.imports.sole)
+
+    assert_response :success
+    assert_includes response.body, "Sale"
+    assert_includes response.body, "01 Mar 2026"
+  end
 end

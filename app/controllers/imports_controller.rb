@@ -70,20 +70,22 @@ class ImportsController < ApplicationController
       @import = current_user.imports.find(params[:id])
     end
 
-    # Start from what the bank used last time, but only if it still fits this file. If the bank
-    # changed its format, those columns won't be there, so fall back to a fresh detection.
+    # Start from what the bank used last time, but only when it still fits this file. A new bank
+    # has nothing remembered, and a bank that changed format won't have those columns, so both
+    # fall back to a fresh detection.
     def current_mapping
       remembered = @import.bank_account.mapping
-      remembered && remembered_fits?(remembered) ? remembered : detected_mapping
+
+      if remembered && remembered_fits?(remembered)
+        remembered
+      else
+        @import.file.open { |io| Csv::Detect.call(io) }.with(currency: @import.bank_account.currency)
+      end
     end
 
     def remembered_fits?(mapping)
-      headers = headers_for(mapping.delimiter)
+      headers = @import.file.open { |io| CSV.parse_line(io.readline, col_sep: mapping.delimiter) }
       mapping.column_map.values.all? { |header| headers.include?(header) }
-    end
-
-    def detected_mapping
-      @import.file.open { |io| Csv::Detect.call(io) }.with(currency: @import.bank_account.currency)
     end
 
     SAMPLE_SIZE = 15
@@ -92,15 +94,12 @@ class ImportsController < ApplicationController
     # the ones it couldn't. Headers come from the same pass, so the column selects follow the file.
     def load_preview
       mapper = Csv::Mapper.new(@mapping)
+
       @import.file.open do |io|
         csv = CSV.new(io, headers: true, skip_blanks: true, col_sep: @mapping.delimiter)
         @rows = csv.first(SAMPLE_SIZE).map { |row| mapper.preview(row) }
         @headers = csv.headers || []
       end
-    end
-
-    def headers_for(delimiter)
-      @import.file.open { |io| CSV.parse_line(io.readline, col_sep: delimiter) }
     end
 
     COLUMN_FIELDS = %i[date description amount debit credit balance reference].freeze
