@@ -44,19 +44,12 @@
     }
   }
 
-  .preview-empty {
-    padding: var(--s-7) var(--s-5);
-    text-align: center;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
+  .transactions-table .is-unreadable {
+    background: color-mix(in srgb, var(--negative) 6%, transparent);
+  }
 
-    p {
-      margin: 0 0 var(--s-2);
-    }
-
-    p:last-child {
-      margin: 0;
-    }
+  .transactions-table .is-bad {
+    color: var(--negative);
   }
 
   .steps {

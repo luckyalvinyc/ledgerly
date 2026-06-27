@@ -198,7 +198,9 @@ class ImportTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :success
-    assert_includes response.body, "read any transactions"
+    assert_includes response.body, "Rent"
+    assert_includes response.body, "31/01/2026"
+    assert_includes response.body, "is-bad"
   end
 
   test "confirming with an edited mapping imports using that mapping" do
@@ -305,6 +307,6 @@ class ImportTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Refund"
-    assert_not_includes response.body, "read any transactions"
+    assert_includes response.body, "01 Feb 2026"
   end
 end

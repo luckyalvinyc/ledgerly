@@ -7,8 +7,9 @@
 <%= render "steps", current: 2 %>
 
 <%= turbo_frame_tag "import_review" do %>
-  <% ok = @results.select(&:ok?) %>
-  <% failed = @results.reject(&:ok?) %>
+  <% blocked = @rows.count { |row| row_unreadable?(row) } %>
+  <% bad_date = @rows.any? { |row| !row[:posted_on].ok? } %>
+  <% bad_amount = @rows.any? { |row| !row[:amount].ok? } %>
 
   <% if @error.present? %>
     <div class="flash flash-alert"><span><%= @error %></span></div>
@@ -20,8 +21,16 @@
 
       <p class="muted panel-intro">Tell Ledgerly which column in your file is which. We filled these in by reading your file, so change only what looks wrong. Not sure what a field means? Click the ? beside it.</p>
 
-      <% if failed.any? %>
-        <div class="flash flash-alert"><span>We couldn't read some rows. Double-check the <strong>Date</strong> and <strong>Amount</strong> settings above.</span></div>
+      <% if blocked > 0 %>
+        <div class="flash flash-alert"><span>
+          <% if bad_date && !bad_amount %>
+            The highlighted dates don't match the <strong>Date format</strong> setting. Pick the format that matches your file.
+          <% elsif bad_amount && !bad_date %>
+            We couldn't read the <strong>Amount</strong>. Check the Amount column and Amount style.
+          <% else %>
+            Double-check the <strong>Date</strong> and <strong>Amount</strong> settings above.
+          <% end %>
+        </span></div>
       <% end %>
 
       <div class="mapping-grid">
@@ -55,7 +64,7 @@
       </div>
     </details>
 
-    <% if ok.any? %>
+    <% if @rows.any? %>
       <table class="transactions-table">
         <thead>
           <tr>
@@ -66,28 +75,28 @@
           </tr>
         </thead>
         <tbody>
-          <% ok.each do |result| %>
-            <% row = result.row %>
-            <tr>
-              <td class="date"><%= row.posted_on.strftime("%d %b %Y") %></td>
-              <td><%= row.description %></td>
-              <%= tag.td class: class_names("amount", "is-negative" => row.amount.negative?) do %>
-                <%= money(row.amount, currency: @import.bank_account.currency) %>
+          <% @rows.each do |row| %>
+            <tr class="<%= "is-unreadable" if row_unreadable?(row) %>">
+              <% date = row[:posted_on] %>
+              <%= tag.td class: class_names("date", "is-bad" => !date.ok?) do %>
+                <%= date.ok? ? date.value.strftime("%d %b %Y") : date.value %>
               <% end %>
-              <td class="amount"><%= money(row.balance, currency: @import.bank_account.currency) if row.balance %></td>
+              <td><%= row[:description].value %></td>
+              <% amount = row[:amount] %>
+              <%= tag.td class: class_names("amount", "is-bad" => !amount.ok?, "is-negative" => amount.ok? && amount.value.negative?) do %>
+                <%= amount.ok? ? money(amount.value, currency: @import.bank_account.currency) : (amount.value.presence || "—") %>
+              <% end %>
+              <td class="amount"><%= money(row[:balance].value, currency: @import.bank_account.currency) if row[:balance].value %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
       <p class="muted">
-        Showing the first <%= ok.size %> rows.
-        <% if failed.any? %><%= pluralize(failed.size, "row") %> couldn't be read and will be skipped.<% end %>
+        Showing the first <%= @rows.size %> rows.
+        <% if blocked > 0 %><%= pluralize(blocked, "row") %> can't be read yet and will be skipped.<% end %>
       </p>
     <% else %>
-      <div class="preview-empty">
-        <p>We couldn't read any transactions with the current settings.</p>
-        <p class="muted">Open <strong>Adjust how Ledgerly reads your file</strong> above and double-check the <strong>Date</strong> and <strong>Amount</strong> settings.</p>
-      </div>
+      <p class="muted">We didn't find any rows in this file.</p>
     <% end %>
 
     <div class="actions">

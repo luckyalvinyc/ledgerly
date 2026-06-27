@@ -32,7 +32,7 @@ class ImportsController < ApplicationController
   def review
     @mapping = current_mapping
     load_preview
-    @adjust_open = @results.any? { |result| !result.ok? }
+    @adjust_open = @rows.any? { |row| row_unreadable?(row) }
   end
 
   # Re-renders the review frame for the mapping currently in the form (live preview).
@@ -88,13 +88,23 @@ class ImportsController < ApplicationController
 
     SAMPLE_SIZE = 15
 
-    # Headers come from the chosen delimiter, so the column selects follow it. The sample keeps
-    # failures (Csv::Parser::Result) so a wrong mapping is visible in the preview.
+    # Headers come from the chosen delimiter, so the column selects follow it. The sample is read
+    # cell by cell, so a row still shows the columns it could read and flags the ones it couldn't.
     def load_preview
       @headers = headers_for(@mapping.delimiter)
       mapper = Csv::Mapper.new(@mapping)
-      @results = @import.file.open { |io| Csv::Parser.foreach(io, mapper:).first(SAMPLE_SIZE) }
+      @rows = @import.file.open do |io|
+        CSV.foreach(io, headers: true, skip_blanks: true, col_sep: @mapping.delimiter)
+          .first(SAMPLE_SIZE)
+          .map { |row| mapper.preview(row) }
+      end
     end
+
+    # A row can't be imported if its date or amount didn't read. Other fields are optional.
+    def row_unreadable?(row)
+      !row[:posted_on].ok? || !row[:amount].ok?
+    end
+    helper_method :row_unreadable?
 
     def headers_for(delimiter)
       @import.file.open { |io| CSV.parse_line(io.readline, col_sep: delimiter) }

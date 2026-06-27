@@ -17,6 +17,10 @@ module Csv
       end
     end
 
+    Cell = Data.define(:value, :ok) do
+      def ok? = ok
+    end
+
     def initialize(mapping)
       @mapping = mapping
     end
@@ -38,11 +42,31 @@ module Csv
       parsed
     end
 
+    # Per-field read for the review preview. Never raises: each cell says whether it parsed, and
+    # keeps the raw text when it didn't, so the screen shows what it read and flags what it didn't.
+    def preview(row)
+      value = amount(row)
+
+      {
+        posted_on: date_cell(row),
+        description: Cell.new(value: description(row), ok: true),
+        amount: value ? Cell.new(value: value, ok: true) : Cell.new(value: resolve(row, :amount), ok: false),
+        balance: Cell.new(value: balance(row), ok: true)
+      }
+    end
+
     private
 
       def posted_on(row)
         value = resolve(row, :date)
         Date.strptime(value, @mapping.date_format)
+      end
+
+      def date_cell(row)
+        value = resolve(row, :date)
+        Cell.new(value: Date.strptime(value.to_s, @mapping.date_format), ok: true)
+      rescue ArgumentError, TypeError
+        Cell.new(value: value, ok: false)
       end
 
       def description(row)
