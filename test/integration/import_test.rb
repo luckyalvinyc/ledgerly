@@ -187,4 +187,77 @@ class ImportTest < ActionDispatch::IntegrationTest
       assert_operator import.transactions.count, :>, 0
     end
   end
+
+  test "the preview flags rows it cannot read with the current mapping" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "PHP")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "31/01/2026", "Rent", "-1000.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    import = bank_account.imports.sole
+
+    post preview_import_path(import), params: {
+      mapping: {
+        delimiter: ",",
+        amount_strategy: "signed",
+        date_format: "%m/%d/%Y",
+        column_map: { date: "Date", description: "Description", amount: "Amount" }
+      }
+    }
+
+    assert_response :success
+    assert_includes response.body, "Could not read this row"
+  end
+
+  test "confirming with an edited mapping imports using that mapping" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "01/02/2026", "Sale", "500.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    import = bank_account.imports.sole
+
+    perform_enqueued_jobs do
+      post confirm_import_path(import), params: {
+        mapping: {
+          delimiter: ",",
+          amount_strategy: "signed",
+          date_format: "%d/%m/%Y",
+          column_map: { date: "Date", description: "Description", amount: "Amount" }
+        }
+      }
+    end
+
+    transaction = bank_account.transactions.sole
+    assert_equal Date.new(2026, 2, 1), transaction.posted_on
+  end
+
+  test "confirming an incomplete mapping does not import" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "USD")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "2026-06-01", "Sale", "500.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    import = bank_account.imports.sole
+
+    assert_no_enqueued_jobs do
+      post confirm_import_path(import), params: {
+        mapping: {
+          delimiter: ",",
+          amount_strategy: "signed",
+          date_format: "%Y-%m-%d",
+          column_map: { date: "Date", description: "Description", amount: "" }
+        }
+      }
+    end
+
+    assert_response :unprocessable_content
+    assert import.reload.reviewing?
+  end
 end
