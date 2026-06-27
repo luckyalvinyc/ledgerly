@@ -77,7 +77,6 @@ class ImportJob < ApplicationJob
         description: row.description,
         reference: row.reference,
         amount_cents: row.amount.cents,
-        balance_cents: row.balance&.cents,
         fingerprint: row.fingerprint,
         created_at: now,
         updated_at: now
