@@ -11,16 +11,15 @@ class BankAccount < ApplicationRecord
   validates :name, presence: true
   validates :currency, inclusion: { in: Money::SUPPORTED_CURRENCIES }
 
-  def profit_and_loss(period)
+  def profit_and_loss(period, granularity: "month")
+    period = Pnl::Period.for(period, granularity: granularity)
     scope = transactions.where(included: true, posted_on: period.range)
-    revenue = Money.new(scope.where("amount_cents > 0").sum(:amount_cents))
-    expenses = Money.new(-scope.where("amount_cents < 0").sum(:amount_cents))
 
     Pnl.build(
       period: period,
       currency: currency,
-      revenue: revenue,
-      expenses: expenses
+      revenue: scope.where("amount_cents > 0").sum(:amount_cents),
+      expenses: -scope.where("amount_cents < 0").sum(:amount_cents)
     )
   end
 end

@@ -8,19 +8,11 @@ module PeriodScoped
     def load_statement(bank_account)
       @bank_account = bank_account
       @granularity = current_granularity
-      @period = current_period
-      @statement = bank_account.profit_and_loss(@period)
+      @statement = bank_account.profit_and_loss(current_anchor, granularity: @granularity)
+      @period = @statement.period
     end
 
     GRANULARITIES = [ "month", "quarter", "year" ].freeze
-
-    def current_period
-      case current_granularity
-      when "month" then Pnl::Period.month(current_anchor)
-      when "quarter" then Pnl::Period.quarter(current_anchor)
-      when "year" then Pnl::Period.year(current_anchor)
-      end
-    end
 
     def current_granularity
       period = params[:period]
