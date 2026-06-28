@@ -66,6 +66,10 @@
     color: var(--muted);
   }
 
+  .alias-row-editing {
+    align-items: start;
+  }
+
   .alias-row .mono {
     font-family: var(--font-mono);
   }
