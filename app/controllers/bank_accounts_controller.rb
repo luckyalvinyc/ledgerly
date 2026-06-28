@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-class BankAccountsController < ApplicationController
+class BankAccountsController < CustomerController
   include Paginated
 
-  before_action :redirect_if_unauthenticated
   before_action :set_bank_account, only: [ :show, :edit, :update, :destroy ]
 
   def new

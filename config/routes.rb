@@ -26,5 +26,14 @@ Rails.application.routes.draw do
 
   resources :transactions, only: [ :update ]
 
+  namespace :admin do
+    resource :session, only: [ :create, :destroy ]
+    get "sign_in", to: "sessions#new", as: :new_session
+
+    resources :header_aliases, only: [ :new, :create, :show, :edit, :update, :destroy ]
+
+    root "header_aliases#index"
+  end
+
   root "dashboard#index"
 end

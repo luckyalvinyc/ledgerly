@@ -17,6 +17,8 @@ class User < ApplicationRecord
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 
+  enum :role, { customer: "customer", admin: "admin" }
+
   has_many :sessions
   has_many :bank_accounts
   has_many :imports, through: :bank_accounts

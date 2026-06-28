@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-class ProfitAndLossController < ApplicationController
+class ProfitAndLossController < CustomerController
   include PeriodScoped
   include Paginated
-
-  before_action :redirect_if_unauthenticated
 
   def show
     load_statement(current_user.bank_accounts.find(params[:bank_account_id]))

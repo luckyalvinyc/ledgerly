@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-class ImportsController < ApplicationController
-  before_action :redirect_if_unauthenticated
+class ImportsController < CustomerController
   before_action :set_import, only: [ :show, :review, :preview, :confirm ]
 
   helper_method :import_return_to

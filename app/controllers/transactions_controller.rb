@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-class TransactionsController < ApplicationController
+class TransactionsController < CustomerController
   include PeriodScoped
-
-  before_action :redirect_if_unauthenticated
 
   def update
     @transaction = current_user.transactions.find(params[:id])

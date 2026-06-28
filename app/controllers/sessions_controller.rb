@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
       email: params[:email],
       password: params[:password]
     )
-    if user.present?
+    if user&.customer?
       sign_in(user)
       redirect_to root_path
     else

@@ -1,3 +1,8 @@
 lucky:
   email: "lucky@test.ing"
   password_digest: <%= Argon2::Password.create("SomePassw0rd@") %>
+
+admin:
+  email: "admin@test.ing"
+  password_digest: <%= Argon2::Password.create("SomePassw0rd@") %>
+  role: admin
