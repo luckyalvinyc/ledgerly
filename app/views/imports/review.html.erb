@@ -16,6 +16,13 @@
   <% end %>
 
   <%= form_with url: preview_import_path(@import), data: { controller: "auto-submit" } do %>
+    <%# Detected once and not worth asking a user about, but carried so they survive a re-read. %>
+    <%= hidden_field_tag "mapping[delimiter]", @mapping.delimiter %>
+    <%= hidden_field_tag "mapping[date_format]", @mapping.date_format %>
+    <%= hidden_field_tag "mapping[amount_strategy]", @mapping.amount_strategy %>
+    <%= hidden_field_tag "mapping[column_map][balance]", @mapping.column_map[:balance] %>
+    <%= hidden_field_tag "mapping[column_map][reference]", @mapping.column_map[:reference] %>
+
     <%= tag.details class: "mapping-adjust", open: @adjust_open do %>
       <summary>Adjust how Ledgerly reads your file</summary>
 
@@ -24,35 +31,16 @@
       <% if blocked > 0 %>
         <div class="flash flash-alert"><span>
           <% if bad_date && !bad_amount %>
-            The highlighted dates don't match the <strong>Date format</strong> setting. Pick the format that matches your file.
+            We couldn't read the dates. Check that the <strong>Date</strong> column points at your dates.
           <% elsif bad_amount && !bad_date %>
-            We couldn't read the <strong>Amount</strong>. Check the Amount column and Amount style.
+            We couldn't read the amounts. Check the amount columns.
           <% else %>
-            Double-check the <strong>Date</strong> and <strong>Amount</strong> settings above.
+            We couldn't read the dates or amounts. Check the columns below.
           <% end %>
         </span></div>
       <% end %>
 
       <div class="mapping-grid">
-        <div class="field">
-          <%= mapping_label "mapping_date_format", "Date format", :date_format %>
-          <%= select_tag "mapping[date_format]",
-            options_for_select(ImportsHelper::DATE_FORMATS, @mapping.date_format),
-            data: { action: "change->auto-submit#submit" } %>
-        </div>
-        <div class="field">
-          <%= mapping_label "mapping_delimiter", "Column separator", :delimiter %>
-          <%= select_tag "mapping[delimiter]",
-            options_for_select(ImportsHelper::DELIMITERS, @mapping.delimiter),
-            data: { action: "change->auto-submit#submit" } %>
-        </div>
-        <div class="field">
-          <%= mapping_label "mapping_amount_strategy", "Amount style", :amount_strategy %>
-          <%= select_tag "mapping[amount_strategy]",
-            options_for_select(ImportsHelper::AMOUNT_STRATEGIES, @mapping.amount_strategy.to_s),
-            data: { action: "change->auto-submit#submit" } %>
-        </div>
-
         <% column_fields(@mapping.amount_strategy).each do |field, label| %>
           <div class="field">
             <%= mapping_label "mapping_column_map_#{field}", label, field %>
@@ -64,7 +52,11 @@
       </div>
     <% end %>
 
-    <% if @rows.any? %>
+    <% if @rows.none? %>
+      <p class="muted">We didn't find any rows in this file.</p>
+    <% elsif blocked == @rows.size %>
+      <p class="muted">We couldn't read any rows with these settings. Check the <strong>Date</strong> and <strong>Amount</strong> fields above.</p>
+    <% else %>
       <table class="transactions-table">
         <thead>
           <tr>
@@ -95,8 +87,6 @@
         Showing the first <%= @rows.size %> rows.
         <% if blocked > 0 %><%= pluralize(blocked, "row") %> can't be read yet and will be skipped.<% end %>
       </p>
-    <% else %>
-      <p class="muted">We didn't find any rows in this file.</p>
     <% end %>
 
     <div class="actions">

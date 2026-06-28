@@ -181,6 +181,7 @@ class ImportTest < ActionDispatch::IntegrationTest
     file = create_csv_file do |csv|
       csv << [ "Date", "Description", "Amount" ]
       csv << [ "31/01/2026", "Rent", "-1000.00" ]
+      csv << [ "01/15/2026", "Sales", "500.00" ]
     end
     post bank_account_imports_path(bank_account), params: { file: file }
     import = bank_account.imports.sole
@@ -195,9 +196,35 @@ class ImportTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :success
-    assert_includes response.body, "Rent"
-    assert_includes response.body, "31/01/2026"
+    assert_includes response.body, "Sales" # reads cleanly as month first
+    assert_includes response.body, "Rent" # flagged, kept in place
+    assert_includes response.body, "31/01/2026" # the unreadable date, shown as-is
     assert_includes response.body, "is-bad"
+  end
+
+  test "the preview shows a single message when it cannot read any row" do
+    bank_account = @user.bank_accounts.create!(name: "Bank A", currency: "PHP")
+
+    file = create_csv_file do |csv|
+      csv << [ "Date", "Description", "Amount" ]
+      csv << [ "31/01/2026", "Rent", "-1000.00" ]
+    end
+    post bank_account_imports_path(bank_account), params: { file: file }
+    import = bank_account.imports.sole
+
+    post preview_import_path(import), params: {
+      mapping: {
+        delimiter: ",",
+        amount_strategy: "signed",
+        date_format: "%m/%d/%Y",
+        column_map: { date: "Date", description: "Description", amount: "Amount" }
+      }
+    }
+
+    assert_response :success
+    assert_includes response.body, "couldn't read any rows"
+    assert_not_includes response.body, "Rent"
+    assert_select "table.transactions-table", false
   end
 
   test "confirming with an edited mapping imports using that mapping" do
@@ -280,7 +307,7 @@ class ImportTest < ActionDispatch::IntegrationTest
 
     get review_import_path(second)
     assert_response :success
-    assert_select "select[name=?] option[selected][value=?]", "mapping[date_format]", "%d/%m/%Y"
+    assert_select "input[name=?][value=?]", "mapping[date_format]", "%d/%m/%Y"
   end
 
   test "falls back to detection when the bank changes its format" do

@@ -1,35 +1,12 @@
 # frozen_string_literal: true
 
 module ImportsHelper
-  DATE_FORMATS = [
-    [ "Year first (2026-01-31)", "%Y-%m-%d" ],
-    [ "Day first (31/01/2026)", "%d/%m/%Y" ],
-    [ "Month first (01/31/2026)", "%m/%d/%Y" ]
-  ].freeze
-
-  DELIMITERS = [
-    [ "Comma", "," ],
-    [ "Semicolon", ";" ],
-    [ "Tab", "\t" ],
-    [ "Pipe", "|" ]
-  ].freeze
-
-  AMOUNT_STRATEGIES = [
-    [ "One signed amount", "signed" ],
-    [ "Separate money in and out", "debit_credit" ]
-  ].freeze
-
   HELP = {
-    date_format: "How dates are written in your file. For 31/01/2026 choose day first, for 01/31/2026 choose month first.",
-    delimiter: "The character that separates columns in your file. Usually a comma.",
-    amount_strategy: "Choose 'One signed amount' if a single column shows money in as positive and money out as negative. Choose 'Separate' if your bank uses two columns.",
     date: "The column that holds each transaction's date.",
     description: "The column that says what each transaction was for.",
     amount: "The column with the transaction amount.",
     debit: "The column with money leaving your account.",
-    credit: "The column with money coming into your account.",
-    balance: "Optional. The running balance after each transaction.",
-    reference: "Optional. A reference or cheque number, if your file has one."
+    credit: "The column with money coming into your account."
   }.freeze
 
   def help_mark(field)
@@ -65,8 +42,6 @@ module ImportsHelper
         { amount: "Amount" }
       end
 
-    { date: "Date", description: "Description" }
-      .merge(amount)
-      .merge(balance: "Balance (optional)", reference: "Reference (optional)")
+    { date: "Date", description: "Description", **amount }
   end
 end
