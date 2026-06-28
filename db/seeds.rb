@@ -10,6 +10,11 @@ demo = User.find_or_initialize_by(email: "demo@ledgerly.app")
 demo.password = "DemoPassw0rd!"
 demo.save!
 
+aliases = YAML.load_file(Rails.root.join("db/seeds/header_aliases.yml")).flat_map do |field, patterns|
+  patterns.map { |pattern| { field: field, pattern: pattern.strip.upcase } }
+end
+HeaderAlias.upsert_all(aliases, unique_by: :pattern)
+
 statements = [
   { name: "UnionBank",         currency: "PHP", file: "unionbank.csv" },
   { name: "Northwind Trading", currency: "USD", file: "northwind.csv" },

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_27_115056) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_28_023347) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -47,6 +47,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_27_115056) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_bank_accounts_on_user_id"
+  end
+
+  create_table "header_aliases", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "field", null: false
+    t.string "pattern", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pattern"], name: "index_header_aliases_on_pattern", unique: true
   end
 
   create_table "imports", force: :cascade do |t|

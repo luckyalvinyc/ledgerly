@@ -1,0 +1,32 @@
+date:
+  - DATE
+  - POSTING DATE
+  - VALUE DATE
+  - TRANSACTION DATE
+reference:
+  - REFERENCE
+  - REF NO
+  - REF
+description:
+  - DESCRIPTION
+  - DETAILS
+  - NARRATION
+  - PARTICULARS
+  - MEMO
+debit:
+  - DEBIT
+  - WITHDRAWAL
+  - MONEY OUT
+  - PAID OUT
+credit:
+  - CREDIT
+  - DEPOSIT
+  - MONEY IN
+  - PAID IN
+amount:
+  - AMOUNT
+balance:
+  - BALANCE
+  - ENDING BALANCE
+  - RUNNING BALANCE
+  - CLOSING BALANCE
