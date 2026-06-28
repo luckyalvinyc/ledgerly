@@ -9,7 +9,7 @@
   </div>
   <div class="field">
     <%= f.label :password, "Password" %>
-    <%= f.password_field :password, required: true, autocomplete: "new-password" %>
+    <%= render "shared/password_field", form: f, autocomplete: "new-password" %>
     <%= render "shared/field_errors", model: @user, attribute: :password %>
   </div>
   <%= f.submit "Create account", class: "btn-primary" %>

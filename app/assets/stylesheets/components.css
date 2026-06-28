@@ -295,6 +295,7 @@
   input[type="text"],
   input[type="email"],
   input[type="password"],
+  input[type="search"],
   input[type="file"],
   select {
     width: 100%;
@@ -304,6 +305,10 @@
     background: var(--surface);
   }
 
+  input[type="search"] {
+    appearance: none;
+  }
+
   select {
     appearance: none;
     padding-right: 2.25rem;
@@ -311,6 +316,44 @@
     background-repeat: no-repeat;
     background-position: right var(--s-3) center;
     background-size: 0.85rem;
+  }
+
+  .password-field {
+    position: relative;
+  }
+
+  .password-field input {
+    padding-right: 2.75rem;
+  }
+
+  .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: var(--s-2);
+    transform: translateY(-50%);
+    display: flex;
+    padding: var(--s-1);
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .password-toggle svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .password-toggle .icon-eye-off {
+    display: none;
+  }
+
+  .password-field.is-revealed .icon-eye {
+    display: none;
+  }
+
+  .password-field.is-revealed .icon-eye-off {
+    display: block;
   }
 
   .flash {
@@ -429,6 +472,11 @@
     input,
     select {
       border-color: var(--negative);
+    }
+
+    input:focus-visible,
+    select:focus-visible {
+      outline-color: var(--negative);
     }
   }
 
