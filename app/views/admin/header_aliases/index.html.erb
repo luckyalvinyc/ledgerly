@@ -1,0 +1,31 @@
+<% content_for :title, "Header aliases" %>
+
+<div class="admin-page-head">
+  <div>
+    <h1 class="page-title">Header aliases</h1>
+    <p class="muted">Words detection looks for in a file's column headers to map each column to a field.</p>
+  </div>
+  <%= link_to "New alias", new_admin_header_alias_path, class: "btn btn-primary", data: { turbo_frame: "new_header_alias" } %>
+</div>
+
+<%= form_with url: admin_root_path, method: :get, data: { controller: "auto-submit" } do |form| %>
+  <div class="admin-filters">
+    <%= form.search_field :q, value: params[:q], placeholder: "Search patterns" %>
+    <%= form.select :field,
+          [ [ "All fields", "" ] ] + Csv::Detect::FIELDS.map { |field| [ field.to_s.titleize, field ] },
+          { selected: params[:field] },
+          data: { action: "change->auto-submit#submit" } %>
+  </div>
+<% end %>
+
+<div class="alias-table">
+  <div class="alias-row alias-row-head">
+    <span>Field</span>
+    <span>Pattern</span>
+    <span></span>
+  </div>
+  <%= turbo_frame_tag "new_header_alias" %>
+  <div id="header_aliases">
+    <%= render @header_aliases %>
+  </div>
+</div>

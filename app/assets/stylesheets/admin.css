@@ -1,0 +1,135 @@
+@layer pages {
+  .admin-bar {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .admin-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: var(--s-3) var(--s-5);
+  }
+
+  .admin-brand {
+    font-weight: var(--font-medium);
+  }
+
+  .admin-bar-actions {
+    margin-left: auto;
+  }
+
+  .admin-main {
+    padding-top: var(--s-6);
+  }
+
+  .admin-page-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-4);
+    margin-bottom: var(--s-5);
+  }
+
+  .admin-filters {
+    display: flex;
+    gap: var(--s-3);
+    margin-bottom: var(--s-4);
+  }
+
+  .admin-filters input {
+    flex: 1;
+  }
+
+  .admin-filters select {
+    flex: none;
+    width: 12rem;
+  }
+
+  .alias-table {
+    border-top: 1px solid var(--border);
+  }
+
+  .alias-row {
+    display: grid;
+    grid-template-columns: 9rem 1fr auto;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-2) var(--s-1);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .alias-row-head {
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .alias-row .mono {
+    font-family: var(--font-mono);
+  }
+
+  .alias-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--s-2);
+  }
+
+  .alias-actions form {
+    margin: 0;
+    display: inline-flex;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .icon-btn svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .icon-btn:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+
+  .icon-btn-danger:hover {
+    color: var(--negative);
+  }
+
+  .admin-auth {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-4);
+  }
+
+  .admin-auth-card {
+    width: 100%;
+    max-width: 22rem;
+    padding: var(--s-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .admin-auth-brand {
+    margin-bottom: var(--s-2);
+    color: var(--muted);
+    font-weight: var(--font-medium);
+  }
+}

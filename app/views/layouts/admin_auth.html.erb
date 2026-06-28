@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en"<%= raw(%( data-theme="#{current_theme}")) if current_theme %>>
+  <%= render "layouts/shared/head" %>
+
+  <body class="admin-auth">
+    <main class="admin-auth-card">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

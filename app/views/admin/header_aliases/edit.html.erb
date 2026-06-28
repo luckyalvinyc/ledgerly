@@ -1,0 +1,15 @@
+<%= turbo_frame_tag dom_id(@header_alias) do %>
+  <%= form_with model: [ :admin, @header_alias ] do |form| %>
+    <div class="alias-row alias-row-editing">
+      <%= form.select :field, Csv::Detect::FIELDS.map { |field| [ field.to_s.titleize, field ] } %>
+      <div>
+        <%= form.text_field :pattern, autofocus: true %>
+        <%= render "shared/field_errors", model: @header_alias, attribute: :pattern %>
+      </div>
+      <span class="alias-actions">
+        <%= form.submit "Save", class: "btn btn-primary btn-sm" %>
+        <%= link_to "Cancel", admin_header_alias_path(@header_alias), class: "btn btn-sm" %>
+      </span>
+    </div>
+  <% end %>
+<% end %>

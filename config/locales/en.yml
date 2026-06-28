@@ -35,3 +35,8 @@ en:
       rate_limited: "Too many sign-in attempts. Please wait a few minutes and try again."
     bank_accounts:
       deleted: "%{name} and its transactions were deleted"
+    admin:
+      header_aliases:
+        created: "Alias added"
+        updated: "Alias updated"
+        deleted: "Alias removed"

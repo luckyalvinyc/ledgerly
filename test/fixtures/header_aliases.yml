@@ -1,7 +1,75 @@
-<% YAML.load_file(Rails.root.join("db/seeds/header_aliases.yml")).each do |field, patterns| %>
-<% patterns.each do |pattern| %>
-<%= field %>_<%= pattern.parameterize(separator: "_") %>:
-  field: <%= field %>
-  pattern: <%= pattern %>
-<% end %>
-<% end %>
+date_date:
+  field: date
+  pattern: DATE
+date_posting_date:
+  field: date
+  pattern: POSTING DATE
+date_value_date:
+  field: date
+  pattern: VALUE DATE
+date_transaction_date:
+  field: date
+  pattern: TRANSACTION DATE
+reference_reference:
+  field: reference
+  pattern: REFERENCE
+reference_ref_no:
+  field: reference
+  pattern: REF NO
+reference_ref:
+  field: reference
+  pattern: REF
+description_description:
+  field: description
+  pattern: DESCRIPTION
+description_details:
+  field: description
+  pattern: DETAILS
+description_narration:
+  field: description
+  pattern: NARRATION
+description_particulars:
+  field: description
+  pattern: PARTICULARS
+description_memo:
+  field: description
+  pattern: MEMO
+debit_debit:
+  field: debit
+  pattern: DEBIT
+debit_withdrawal:
+  field: debit
+  pattern: WITHDRAWAL
+debit_money_out:
+  field: debit
+  pattern: MONEY OUT
+debit_paid_out:
+  field: debit
+  pattern: PAID OUT
+credit_credit:
+  field: credit
+  pattern: CREDIT
+credit_deposit:
+  field: credit
+  pattern: DEPOSIT
+credit_money_in:
+  field: credit
+  pattern: MONEY IN
+credit_paid_in:
+  field: credit
+  pattern: PAID IN
+amount_amount:
+  field: amount
+  pattern: AMOUNT
+balance_balance:
+  field: balance
+  pattern: BALANCE
+balance_ending_balance:
+  field: balance
+  pattern: ENDING BALANCE
+balance_running_balance:
+  field: balance
+  pattern: RUNNING BALANCE
+balance_closing_balance:
+  field: balance
+  pattern: CLOSING BALANCE

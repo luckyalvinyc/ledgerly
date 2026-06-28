@@ -2,6 +2,8 @@
 
 module Csv
   class Detect
+    FIELDS = %i[date reference description debit credit amount balance].freeze
+
     class << self
       def call(io)
         header_line = io.readline
@@ -24,8 +26,6 @@ module Csv
         def detect_delimiter(line)
           DELIMITERS.max_by { |d| line.count(d) }
         end
-
-        FIELDS = %i[date reference description debit credit amount balance].freeze
 
         def detect_columns(header_line, delimiter:)
           claimed = Set.new

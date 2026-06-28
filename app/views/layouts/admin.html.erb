@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"<%= raw(%( data-theme="#{current_theme}")) if current_theme %>>
+  <%= render "layouts/shared/head" %>
+
+  <body class="admin">
+    <header class="admin-bar">
+      <div class="admin-bar-inner">
+        <%= link_to "Ledgerly Admin", admin_root_path, class: "admin-brand" %>
+        <div class="admin-bar-actions">
+          <%= button_to "Sign out", admin_session_path, method: :delete, class: "btn" %>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container admin-main" tabindex="-1">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

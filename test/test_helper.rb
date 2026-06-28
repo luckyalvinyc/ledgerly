@@ -28,6 +28,20 @@ module ActiveSupport
       user
     end
 
+    def admin_sign_in(user = users(:admin))
+      cookies.delete("__Host-session_token")
+
+      post admin_session_path, params: {
+        email: user.email,
+        password: "SomePassw0rd@"
+      }
+
+      cookie = cookies.get_cookie("__Host-session_token")
+      assert_not_nil cookie
+
+      user
+    end
+
     def import_rows(bank_account, &block)
       file = create_csv_file(&block)
 
