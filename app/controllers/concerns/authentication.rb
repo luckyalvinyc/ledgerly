@@ -23,7 +23,6 @@ module Authentication
 
     def sign_in(user)
       session = user.sessions.create!(
-        token: SecureRandom.urlsafe_base64(32),
         ip_address: request.remote_ip,
         user_agent: request.user_agent
       )
